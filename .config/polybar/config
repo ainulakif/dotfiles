@@ -1,0 +1,492 @@
+;==========================================================
+;
+;
+;   ██████╗  ██████╗ ██╗  ██╗   ██╗██████╗  █████╗ ██████╗
+;   ██╔══██╗██╔═══██╗██║  ╚██╗ ██╔╝██╔══██╗██╔══██╗██╔══██╗
+;   ██████╔╝██║   ██║██║   ╚████╔╝ ██████╔╝███████║██████╔╝
+;   ██╔═══╝ ██║   ██║██║    ╚██╔╝  ██╔══██╗██╔══██║██╔══██╗
+;   ██║     ╚██████╔╝███████╗██║   ██████╔╝██║  ██║██║  ██║
+;   ╚═╝      ╚═════╝ ╚══════╝╚═╝   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+;
+;
+;   To learn more about how to configure Polybar
+;   go to https://github.com/polybar/polybar
+;
+;   The README contains a lot of information
+;
+;==========================================================
+
+[colors]
+background = #BCC3C3
+background-alt = #002B36
+foreground = #002B36
+foreground-alt = #BCC3C3
+primary = #ffb52a
+secondary = #e60053
+ternary = #c2f530
+alert = #FF0000
+
+[bar/root]
+monitor = ${env:MONITOR:}
+width = 100%
+height = 23
+radius = 6.0
+fixed-center = true
+top = yes
+bottom = no
+override-redirect = true
+
+foreground = ${colors.foreground-alt}
+background = ${colors.background-alt}
+
+; Under-/overline pixel size and argb color
+; Individual values can be defined using:
+;   {overline,underline}-size
+;   {overline,underline}-color
+line-size = 2
+line-color = #dfdfdf
+
+border-top-size = 7
+border-bottom-size = 0
+border-left-size = 400 
+border-right-size = 400
+
+padding-left = 0
+padding-right = 0
+
+module-margin-left = 0.5
+module-margin-right = 0.5
+
+font-0 = Hack:pixelsize=9;3
+font-2 = "Wuncon Siji:pixelsize=10;3"
+font-1 = Weather Icons:style=Regular:size=10;2
+font-3 = FontAwesome5Free:style=Solid:pixelsize=10;3
+font-4 = FontAwesome5Brands:style=Solid:pixelsize=10;3
+font-5 = Symbols Nerd Font Mono:style=Regular:size=9;3
+font-6 = Symbols Nerd Font Mono:style=Regular:size=13;3
+
+modules-left = i3 sp2 xkeyboard sp3 keystroke sp2
+modules-center = date
+modules-right = title backlight sp2 battery sp5 onlinestatus
+
+tray-position = center
+tray-padding = 0
+tray-detached = false
+tray-maxsize = 14
+tray-scale = 1.0
+tray-background = ${colors.background-alt}
+tray-foreground = ${colors.foreground-alt}
+tray-offset-x = 0
+tray-offset-y = 0
+
+wm-restack = i3
+
+scroll-up = #i3.next
+scroll-down = #i3.prev
+
+cursor-click = pointer
+
+[module/sp1]
+type = custom/text
+content = " | "
+content-foreground = #93A1A1
+content-background = ${colors.background-alt}
+
+[module/sp2]
+type = custom/text
+content = " |"
+content-foreground = #93A1A1
+content-background = ${colors.background-alt}
+
+[module/sp3]
+type = custom/text
+content = " "
+content-foreground = #93A1A1
+content-background = ${colors.background-alt}
+
+[module/sp4]
+type = custom/text
+content = "| "
+content-foreground = #93A1A1
+content-background = ${colors.background-alt}
+
+[module/sp5]
+type = custom/text
+content = "|"
+content-foreground = #93A1A1
+content-background = ${colors.background-alt}
+
+[module/i3]
+type = internal/i3
+format = <label-state> <label-mode>
+index-sort = true
+wrapping-scroll = true
+strip-wsnumbers = false
+enable-click = false
+enable-scroll = false
+
+label-mode = %mode%
+label-mode-padding = 1
+label-mode-foreground = ${colors.foreground-alt}
+label-mode-background = ${colors.background-alt}
+
+; focused = Active workspace on focused monitor
+label-focused = %index%
+label-focused-foreground = ${colors.foreground}
+label-focused-background = ${colors.background}
+label-focused-underline = ${colors.foreground-alt}
+label-focused-padding = 1
+
+; unfocused = Inactive workspace on any monitor
+label-unfocused = %index%
+label-unfocused-padding = ${self.label-focused-padding}
+label-unfocused-foreground = ${colors.foreground-alt}
+label-unfocused-background = ${colors.background-alt}
+
+; visible = Active workspace on unfocused monitor
+label-visible = %index%
+label-visible-foreground = ${self.label-focused-background}
+label-visible-background = ${self.label-focused-foreground}
+label-visible-underline = ${self.label-focused-underline}
+label-visible-padding = ${self.label-focused-padding}
+
+; urgent = Workspace with urgency hint set
+label-urgent = %index%
+label-urgent-foreground = ${colors.foreground}
+label-urgent-background = ${colors.alert}
+label-urgent-padding = 1
+
+; Separator in between workspaces
+label-separator =
+label-separator-padding = 0
+label-separator-foreground = #fff
+
+[module/keystroke]
+type = custom/script
+exec = cat /tmp/keystrokes.txt
+interval = 0.1
+
+;[module/info-hackspeed]
+;type = custom/script
+;exec = ~/.config/polybar/scripts/info-hackspeed.sh
+;tail = true
+
+[module/weather]
+type = custom/script
+exec = ~/.config/polybar/scripts/weather-openmap.sh
+interval = 600
+
+[module/linux-ver]
+type = custom/script
+exec = uname -r
+interval = 600
+
+[module/updates]
+type = custom/script
+exec = ~/.config/polybar/scripts/arch_updates.sh
+interval = 60
+label = %output%
+
+[module/date]
+type = internal/date
+interval = 1
+
+time = " %a %d %b %H:%M:%S"
+
+format-prefix = " "
+format-prefix-foreground = ${colors.foreground-alt}
+format-prefix-background = ${colors.background-alt}
+
+label = %time%
+label-foreground = ${colors.foreground-alt}
+label-background = ${colors.background-alt}
+
+[module/battery]
+type = internal/battery
+
+;format-discharging-background = ${colors.background-alt}
+format-low-underline = ${colors.alert}
+format-full-underline = ${colors.ternary}
+
+; This is useful in case the battery never reports 100% charge
+; Default: 100
+full-at = 90
+
+; format-low once this charge percentage is reached
+; Default: 10
+; New in version 3.6.0
+
+low-at = 20
+; Use the following command to list batteries and adapters:
+; $ ls -1 /sys/class/power_supply/
+battery = BAT0
+adapter = AC0
+
+; If an inotify event haven't been reported in this many
+; seconds, manually poll for new values.
+;
+; Needed as a fallback for systems that don't report events
+; on sysfs/procfs.
+;
+; Disable polling by setting the interval to 0.
+;
+; Default: 5
+poll-interval = 5
+
+format-charging = " <animation-charging><label-charging> "
+format-discharging = <label-discharging>
+format-full = " <label-full>"
+format-low = <label-low>
+label-charging = %percentage%%
+label-discharging = " %percentage%% "
+label-full = " %percentage%% "
+label-low = " %percentage%% "
+
+animation-charging-0 = 󱐋
+animation-changing-framerate = 750
+
+[module/volume]
+type = internal/alsa
+
+; Soundcard to be used
+; Usually in the format hw:# where # is the card number
+; You can find the different card numbers in `/proc/asound/cards`
+master-soundcard = default
+speaker-soundcard = default
+headphone-soundcard = default
+
+; Name of the master, speaker and headphone mixers
+; Use the following command to list available mixer controls:
+; $ amixer scontrols | sed -nr "s/.*'([[:alnum:]]+)'.*/\1/p"
+; If master, speaker or headphone-soundcard isn't the default,
+; use `amixer -c # scontrols` instead where # is the number
+; of the master, speaker or headphone soundcard respectively
+;
+; Default: Master
+master-mixer = Master
+
+format-volume = "<label-volume><bar-volume>"
+label-volume = " "
+label-volume-foreground = ${colors.foreground-alt}
+label-volume-background = ${colors.background-alt}
+
+format-muted-prefix = " "
+format-muted-foreground = ${colors.foreground-alt}
+format-muted-background = ${colors.background-alt}
+label-muted = MUTED
+
+bar-volume-width = 5
+bar-volume-foreground-0 = ${colors.foreground-alt}
+bar-volume-foreground-1 = ${colors.foreground-alt}
+bar-volume-foreground-2 = ${colors.foreground-alt}
+bar-volume-foreground-3 = ${colors.foreground-alt}
+bar-volume-foreground-4 = ${colors.foreground-alt}
+bar-volume-foreground-5 = ${colors.foreground-alt}
+bar-volume-foreground-6 = ${colors.foreground-alt}
+bar-volume-gradient = false
+bar-volume-indicator = []
+bar-volume-indicator-font = 1
+bar-volume-indicator-foreground = ${colors.foreground-alt}
+bar-volume-indicator-background = ${colors.background-alt}
+bar-volume-fill = -
+bar-volume-fill-font = 1
+bar-volume-fill-foreground = ${colors.foreground-alt}
+bar-volume-fill-background = ${colors.background-alt}
+bar-volume-empty = -
+bar-volume-empty-font = 1
+bar-volume-empty-foreground = ${colors.foreground-alt}
+bar-volume-empty-background = ${colors.background-alt}
+
+[module/xkeyboard]
+type = internal/xkeyboard
+
+; List of indicators to ignore
+blacklist-0 = num lock
+blacklist-1 = scroll
+; Available tags:
+;   <label-layout> (default)
+;   <label-indicator> (default)
+format = <label-layout> <label-indicator>
+format-spacing = 0
+
+; Available tokens:
+;   %layout%
+;   %name%
+;   %number%
+;   %icon%
+;   %variant% (New in version 3.6.0)
+; Default: %layout%
+label-layout =
+label-layout-padding = 0
+label-layout-background = ${colors.background-alt}
+label-layout-foreground = ${colors.foreground-alt}
+; Available tokens:
+;   %name%
+; Default: %name%
+; @deprecated, use label-indicator-on
+label-indicator = %name%
+
+; layout-icon-[0-9]+ = layout;icon
+; layout-icon-[0-9]+ = layout;variant;icon (New in version 3.6.0)
+; Assign each layout an icon that will be available as %icon% token for the
+; <label-layout> tag.
+; In the first configuration form, the `layout` will try to match %layout%
+; value ignoring the variant
+; In the second configuration form, 
+;     the `layout` will try to match %layout% value and the `variant` matches %variant%.
+;     the `variant` can be empty (layout;;icon) to match against a %layout%
+;                   with an empty %variant%
+;     the `variant` can be the wildcard '_' to match a %layout% and any variant. 
+;         This is equivalent to the first configuration form
+;     the `layout` cannot be empty (;variant;icon)
+;     the `layout` can be the wildcard '_' to match any %layout% with a
+;                  specific %variant%
+;     Do not use the wildcard '_' for both `layout` and `variant`
+layout-icon-default = some-icon
+layout-icon-0 = ch;C
+layout-icon-1 = us;U
+
+; indicator-icon-[0-9]+ = indicator;off icon;on icon
+; Provides the content of the %icon% token in label-indicator-*
+indicator-icon-default = 
+indicator-icon-0 = caps lock;;󰪛
+indicator-icon-1 = scroll lock;;+SL
+indicator-icon-2 = num lock;-NL;+NL
+
+; Replaces label-indicator
+; Available tokens:
+;   %name%
+;   %icon%
+; Default: %name%
+label-indicator-on = +%icon%
+; Available tokens:
+;   %name%
+;   %icon%
+; Default: (none)
+label-indicator-off = -%name%
+
+; Replaces label-indicator-* if for specific indicators
+; Available tokens:
+;   %name%
+;   %icon%
+label-indicator-on-capslock = %icon%
+label-indicator-off-capslock = %icon%
+label-indicator-on-numlock = 
+label-indicator-off-numlock = 
+label-indicator-on-scrolllock = 
+label-indicator-off-scrolllock = 
+
+[module/backlight]
+type = internal/backlight
+
+; Use the following command to list available cards:
+; $ ls -1 /sys/class/backlight/
+; Default: first usable card in /sys/class/backlight (new in version 3.7.0)
+card = intel_backlight
+
+; Use the `/sys/class/backlight/.../actual-brightness` file
+; rather than the regular `brightness` file.
+; New in version 3.6.0
+; Changed in version: 3.7.0: Defaults to true also on amdgpu backlights
+; Default: true
+use-actual-brightness = true
+
+; Interval in seconds after which after which the current brightness is read
+; (even if no update is detected).
+; Use this as a fallback if brightness updates are not registering in polybar
+; (which happens if the use-actual-brightness is false).
+; There is no guarantee on the precisio of this timing.
+; Set to 0 to turn off
+; New in version 3.7.0
+; Default: 0 (5 if use-actual-brightness is false)
+poll-interval = 0
+
+; Enable changing the backlight with the scroll wheel
+; NOTE: This may require additional configuration on some systems. Polybar will
+; write to `/sys/class/backlight/${self.card}/brightness` which requires polybar
+; to have write access to that file.
+; DO NOT RUN POLYBAR AS ROOT. 
+; The recommended way is to add the user to the
+; `video` group and give that group write-privileges for the `brightness` file.
+; See the ArchWiki for more information:
+; https://wiki.archlinux.org/index.php/Backlight#ACPI
+; Default: false
+enable-scroll = true
+
+; Interval for changing the brightness (in percentage points).
+; New in version 3.7.0
+; Default: 5
+scroll-interval = 10
+
+; Available tags:
+;   <label> (default)
+;   <ramp>
+;   <bar>
+format = <ramp>
+
+; Available tokens:
+;   %percentage% (default)
+label = %percentage%%
+
+; Only applies if <ramp> is used
+ramp-0 = 󰃠
+ramp-1 = 󰃝
+ramp-2 = 󰃟
+ramp-3 = 󰃞
+ramp-4 = 
+
+; Only applies if <bar> is used
+bar-width = 10
+bar-indicator = |
+bar-fill = ─
+bar-empty = ─
+
+[module/onlinestatus]
+type = custom/script
+exec = polybar-onlinestatus --offline-color '#f00' --online-color '#0f0'
+tail = true
+label = %{T6} %output% %{T-}
+format-underline = #07BDEE
+
+[module/truncated-title]
+type = custom/script
+exec = ~/.config/polybar/scripts/truncate_title.sh
+interval = 1
+
+[module/title]
+type = internal/xwindow
+; Available tags:
+;   <label> (default)
+format = <label>
+format-background = ${colors.background-alt}
+format-foreground = ${colors.foreground-alt}
+format-padding = 1
+
+; Available tokens:
+;   %title%
+;   %instance% (first part of the WM_CLASS atom, new in version 3.7.0)
+;   %class%    (second part of the WM_CLASS atom, new in version 3.7.0)
+; Default: %title%
+label = %class%
+;label-maxlen = 50
+
+; Used instead of label when there is no window title
+; Available tokens:
+;   None
+label-empty = Empty
+label-empty-foreground = #707880
+
+[settings]
+throttle-output = 5
+throttle-output-for = 10
+;throttle-input-for = 30
+screenchange-reload = true
+;compositing-background = over
+;compositing-foreground = over
+;compositing-overline = over
+;compositing-border = over
+pseudo-transparency = true
+
+[global/wm]
+margin-top = 5
+margin-bottom = 5
