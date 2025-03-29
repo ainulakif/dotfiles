@@ -1,0 +1,21 @@
+{
+  "hints": {
+    "hint_height": 18,
+    "hint_width_padding": 20,
+    "hint_font_size": 22,
+    "hint_font_face": "Geist Mono Nerd Font",
+    "hint_font_r": 0,
+    "hint_font_g": 0.9,
+    "hint_font_b": 1,
+    "hint_font_a": 1,
+    "hint_pressed_font_r": 0.1,
+    "hint_pressed_font_g": 0.1,
+    "hint_pressed_font_b": 0.1,
+    "hint_pressed_font_a": 1,
+    "hint_upercase": false,
+    "hint_background_r": 0,
+    "hint_background_g": 0,
+    "hint_background_b": 0,
+    "hint_background_a": 9
+  }
+}
