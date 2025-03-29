@@ -23,25 +23,6 @@ restart_units() {
   result=0
 }
 
-test_success() {
-  # test success
-  start_spinner 'sleeping for 2 secs...'
-  sleep 2
-  echo "$?"
-  stop_spinner $?
-}
-
-test_fail() {
-  # test fail
-  start_spinner 'copying non-existen files...'
-  # use sleep to give spinner time to fork and run
-  # because cp fails instantly
-  sleep 1
-  cp 'file1' 'file2' > /dev/null 2>&1
-  echo "$?"
-  stop_spinner $?
-}
-
 local_spinner() {
   # start_spinner 'testing spinner...'
   sleep 0.5
