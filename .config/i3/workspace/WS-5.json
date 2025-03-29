@@ -1,0 +1,26 @@
+// vim:ts=4:sw=4:et
+{
+    "border": "none",
+    "current_border_width": 0,
+    "floating": "auto_off",
+    "geometry": {
+       "height": 1024,
+       "width": 466,
+       "x": 963,
+       "y": 1115
+    },
+    "marks": [],
+    "name": "Server Not Found — Mozilla Firefox",
+    "percent": 1,
+    "swallows": [
+       {
+       // "class": "^firefox$",
+       // "instance": "^Navigator$",
+       // "machine": "^rodhi$",
+       // "title": "^Server\\ Not\\ Found\\ \\—\\ Mozilla\\ Firefox$",
+       // "window_role": "^browser$"
+       }
+    ],
+    "type": "con"
+}
+

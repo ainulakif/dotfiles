@@ -1,0 +1,279 @@
+set $mod Mod4
+font pango:Hack 9
+floating_modifier $mod
+
+# start a terminal
+# set $term alacritty
+set $term wezterm
+bindsym $mod+Return exec $term
+
+# refresh focused cachy-browser
+set $browser cachy-browser
+bindsym $mod+Shift+Return exec --no-startup-id xdotool search --onlyvisible --class $browser key Ctrl+R
+
+# set printsscreen using scrot
+bindsym $mod+p exec --no-startup-id maim -s ~/Pictures/screenshots/$(date +%s).png | xclip -selection clipboard -t image/png
+
+# kill focused window
+bindsym $mod+d kill
+
+# start dmenu (a program launcher)
+#bindsym ctrl+space exec rofi -show run
+bindsym ctrl+space exec "rofi -show combi -modi window,run,combi -combi-modi window,run"
+#bindsym ctrl+space exec dmenu_run
+
+# start hints
+bindsym $mod+i exec --no-startup-id "hints"
+bindsym $mod+u exec --no-startup-id "hints --mode scroll"
+bindsym $mod+y exec --no-startup-id "hints && hints --mode scroll"
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# split in horizontal orientation
+bindsym $mod+s split h
+
+# split in vertical orientation
+bindsym $mod+v split v
+
+bindsym $mod+t split toggle
+
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen toggle
+
+# change container layout (stacked, tabbed, toggle split)
+bindsym $mod+q layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+Shift+w sticky toggle
+
+# toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
+
+# change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+# focus the parent container
+bindsym $mod+a focus parent
+
+# Define names for default workspaces for which we configure key bindings later on.
+# We use variables to avoid repeating the names in multiple places.
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+# switch to workspace
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+
+# move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10
+
+# reload the configuration file
+bindsym $mod+Shift+c reload
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r restart
+# exit i3 (logs you out of your X session)
+# bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+
+# resize window (you can also use the mouse for that)
+mode "resize" {
+        # These bindings trigger as soon as you enter the resize mode
+
+        # same bindings, but for the arrow keys
+        bindsym h resize shrink width 5 px or 5 ppt
+        bindsym k resize grow height 5 px or 5 ppt
+        bindsym j resize shrink height 5 px or 5 ppt
+        bindsym l resize grow width 5 px or 5 ppt
+
+        # back to normal: Enter or Escape
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
+}
+
+bindsym $mod+r mode "resize"
+
+
+#
+# Status Bar:
+#
+exec_always --no-startup-id ~/.config/polybar/launch.sh
+
+
+client.focused          #000000 #000000 #ffffff #000000   #000000
+client.focused_inactive #000000 #000000 #ffffff #000000   #000000
+client.unfocused        #000000 #000000 #888888 #000000   #000000
+client.urgent           #000000 #000000 #ffffff #000000   #000000
+client.placeholder      #000000 #000000 #ffffff #000000   #000000
+client.background       #ffffff
+
+# set $transp       #00000000
+#
+# # NOTE: The secondary rgb color in the lines below is the fallback if
+# # i3 fails to get colors from Xresources.
+# set_from_resource $colorf  i3wm.foreground #f8f8f2
+# set_from_resource $colorb  i3wm.background #181a26
+# set_from_resource $color0  i3wm.color0  #282936
+# set_from_resource $color8  i3wm.color8  #4d4f68
+# set_from_resource $color1  i3wm.color1  #f087bd
+# set_from_resource $color9  i3wm.color9  #bd6a95
+# set_from_resource $color2  i3wm.color2  #a5fb8f
+# set_from_resource $color10 i3wm.color10 #83c771
+# set_from_resource $color3  i3wm.color3  #fae3b0
+# set_from_resource $color11 i3wm.color11 #c7b58c
+# set_from_resource $color4  i3wm.color4  #96cdfb
+# set_from_resource $color12 i3wm.color12 #77a2c7
+# set_from_resource $color5  i3wm.color5  #9183f7
+# set_from_resource $color13 i3wm.color13 #7368c4
+# set_from_resource $color6  i3wm.color6  #89dceb
+# set_from_resource $color14 i3wm.color14 #6bacb8
+# set_from_resource $color7  i3wm.color7  #e9e9f4
+# set_from_resource $color15 i3wm.color15 #f7f7fb
+
+# # class                 border   backgr.  text     indicator  child_border
+# client.focused          $color13 $color13 $color2  $color1    $color8
+# client.focused_inactive $color13 $color8  $color1  $color1    $transp
+# client.unfocused        $color8  $color8  $color7  $color1    $transp
+# client.urgent           $color5  $color1  $color0  $color1    $transp
+# client.background       $transp
+
+########################################################################
+########################################################################
+####
+####                   Workplaces layout
+####
+########################################################################
+########################################################################
+
+# exec --no-startup-id "i3-msg 'workspace 1; exec alacritty'"
+exec --no-startup-id "i3-msg 'workspace 1; exec wezterm'"
+#exec --no-startup-id bash -c 'i3-msg "workspace 1; exec wezterm start -- zsh -c "fastfetch; exec zsh""'
+
+# bindsym $mod+Shift+e exec wezterm start -- /home/ainulakif/Projects/scripts/routine-check_test.sh; /sbin/zsh
+
+
+########################################################################
+########################################################################
+####
+####                   Floated windows
+####
+########################################################################
+########################################################################
+
+for_window [title="Calculator"] floating enable
+for_window [title="Timer"] floating enable
+for_window [class="^.*"] border pixel 1
+for_window [class="librewolf"] border none
+for_window [class="firefox"] border none
+for_window [class="mpv"] floating enable
+for_window [class="imv"] floating enable
+for_window [class="zenity"] floating enable
+for_window [class="cachyos-welcome"] floating enable
+
+# default_border normal 5
+
+########################################################################
+########################################################################
+####
+####                   HOTKEYS
+####
+########################################################################
+########################################################################
+
+
+bindsym XF86AudioRaiseVolume exec "pamixer -ui 3 && pamixer --get-volume > /tmp/xobpipe"
+bindsym XF86AudioLowerVolume exec "pamixer -ud 3 && pamixer --get-volume > /tmp/xobpipe"
+# mute sound
+bindsym XF86AudioMute exec "amixer sset Master toggle | sed -En '/\[on\]/ s/.*\[([0-9]+)%\].*/\1/ p; /\[off\]/ s/.*/0/p' | head -1 > /tmp/xobpipe"
+
+bindsym $mod+Shift+p exec gnome-calculator
+#bindsym $mod+p exec ~/.scripts/dmshot
+
+## This will switch the current layout to the 'us'.
+#bindsym $mod+l exec "setxkbmap -layout us && sleep 0.1 && setxkbmap -option grp:caps_toggle 'us,ru' -option grp_led:caps && sleep 0.1 && i3lock --blur 5"
+
+## This keybind will lock the screen. The lockscreen.
+# bindsym $mod+Mod1+l exec --no-startup-id "sleep 0.1 && i3lock -fk --blur 15"
+# bindsym $mod+Mod1+l exec --no-startup-id "pkill -USR1 xss-lock; $HOME/.config/i3lock-color/lock.sh && sleep 2 && systemctl suspend"
+
+bindsym $mod+Mod1+l exec --no-startup-id "rofi -show powermenu -modi powermenu:~/.config/rofi/plugins/lock_menu.sh"
+
+exec --no-startup-id xss-lock --transfer-sleep-lock -- $HOME/.config/i3lock-color/lock.sh
+
+########################################################################
+########################################################################
+####
+####                   AUTOLOAD
+####
+########################################################################
+########################################################################
+
+## Here is a language switcher by pressing capslock button,
+## and the capslock functionality available by using shift+capslock.
+## Uncomment to enable 'us' to/from 'ru' switch. change to language(s) you prefer more.
+
+#exec_always setxkbmap -option grp:caps_toggle "us,ru" -option "grp:caps_toggle,grp_led:caps"
+
+exec --no-startup-id xrandr --output HDMI-1 --mode 1920x1080 --rate 60 --scale 1x1
+#exec xrandr --auto --output HDMI-1 --mode 1920x1080 --above HDMI-2
+
+exec --no-startup-id feh --bg-fill /home/ainulakif/Pictures/wallpaper/night-big-tree.jpg
+exec --no-startup-id /home/ainulakif/.config/polybar/scripts/info-keylog.sh
+
+exec --no-startup-id dunst
+exec --no-startup-id picom
+exec --no-startup-id redshift
+exec --no-startup-id dex -a -s /etc/xdg/autostart/:~/.config/autostart/
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+
+exec_always mkfifo /tmp/xobpipe && tail -f /tmp/xobpipe | xob -t 2170 & disown
+#exec ~/.i3/launch.sh
+
+########################################################################
+########################################################################
+####
+####                   GAPS
+####
+########################################################################
+########################################################################
+gaps top 27px
+gaps bottom 13px
+gaps horizontal 13px
+gaps inner 8px
+
+workspace 2 gaps vertical 5px
+workspace 2 gaps inner 7px
