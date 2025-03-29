@@ -1,0 +1,9 @@
+[Unit]
+Description=Hints daemon
+[Service]
+Type=simple
+ExecStart=/home/ainulakif/.local/bin/hintsd
+Restart=on-failure
+RestartSec=5s
+[Install]
+WantedBy=default.target

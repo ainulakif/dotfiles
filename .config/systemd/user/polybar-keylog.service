@@ -1,0 +1,9 @@
+[Unit]
+Description=Keylog daemon
+[Service]
+Type=simple
+ExecStart=/home/ainulakif/.config/polybar/scripts/info-keylog.sh
+Restart=on-failure
+RestartSec=5s
+[Install]
+WantedBy=default.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=Run reloadmonitor function on startup
+After=network.target
+
+[Service]
+ExecStart=/bin/zsh -c 'source ~/.zshrc && reloadmonitor'
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target
