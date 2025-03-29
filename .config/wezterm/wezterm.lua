@@ -57,7 +57,7 @@ config.default_prog = {"zsh"}
 wezterm.on("gui-startup", function()
   local home = os.getenv("HOME")
 	local tab, pane, window = mux.spawn_window({
-    args = {"zsh", "-l", "-c", "sleep 0.5; fastfetch; " .. home .. "/Projects/scripts/routine-check_test.sh; exec zsh"}
+    args = {"zsh", "-l", "-c", "sleep 0.5; fastfetch; " .. home .. "/Projects/scripts/bash-spinner/routine-check.sh; exec zsh"}
   })
 	window:gui_window():maximize()
 

@@ -8,7 +8,7 @@ check_units() {
 
   # Display output based on content
   if [ ${#failed_units[@]} -eq 0 ]; then
-    echo "No failed units found."
+    # echo "No failed units found."
     count=0
     # echo "0"
   else
@@ -19,12 +19,20 @@ check_units() {
 }
 
 restart_units() {
-  start_spinner "Restarting $1"
-  result=0
+  unit_name="$1"
+  add_fail=0
+
+
+  systemctl --user restart "$unit_name"
+  # if [ $? -ne 0 ]; then
+  #   echo "Failed to restart $unit_name"
+  #   add_fail=1
+  # else
+  #   echo "Restarting $unit_name"
+  # fi
 }
 
 local_spinner() {
-  # start_spinner 'testing spinner...'
   sleep 0.5
   stop_spinner $1
 }
@@ -33,14 +41,21 @@ check_units
 local_spinner $count
 
 if [ "$count" == 0 ]; then
-  echo "No failed units found."
+  echo "    No failed units found."
 else
 
-  for unit in "${failed_units[@]}"; do
-    restart_units $unit
-    local_spinner $result
-  done
 
-  echo "$count failed unit(s)"
+  echo "    $count failed unit(s)"
+
+  failed_count=0
+  for unit in "${failed_units[@]}"; do
+    start_spinner "Restarting $unit"
+    restart_units $unit
+
+    local_spinner $failed_count
+    # if [ $add_fail == 1 ]; then
+    #   ((failed_count++)) 
+    # fi
+  done
 fi
 
