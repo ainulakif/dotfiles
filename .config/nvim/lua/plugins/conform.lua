@@ -35,7 +35,7 @@
 -- })
 
 return {
-  "stevearc/conform.nvim", enabled = false,
+  "stevearc/conform.nvim", enabled = true,
   optional = true,
   opts = {
     formatters_by_ft = {
@@ -47,8 +47,9 @@ return {
       -- are formatted correctly and :ConformInfo shows:
       -- "LSP: html, templ"
       -- "templ ready (templ) /Users/linkarzu/.local/share/neobean/mason/bin/templ"
-      templ = { "templ" },
+      -- templ = { "templ" },
       -- php = { nil },
+      blade = { "blade-formatter" },
     },
   },
 }
