@@ -275,5 +275,19 @@ gaps bottom 13px
 gaps horizontal 13px
 gaps inner 8px
 
+# Assign workspace 2 to different outputs
+workspace 2 output eDP-1
+workspace 2 output HDMI-1
+
+# Set gaps for workspace 2 on external monitor (HDMI-1)
+assign [workspace=2] → HDMI-1
 workspace 2 gaps vertical 5px
 workspace 2 gaps inner 7px
+
+# Set different gaps when workspace 2 is on main monitor (DP-1)
+for_window [workspace=2] move to output eDP-1
+workspace 2 gaps top 27px
+workspace 2 gaps bottom 13px
+workspace 2 gaps horizontal 13px
+workspace 2 gaps inner 8px
+
