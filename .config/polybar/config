@@ -67,7 +67,7 @@ font-6 = Symbols Nerd Font Mono:style=Regular:size=13;3
 
 modules-left = i3 sp2 xkeyboard sp3 keystroke sp2
 modules-center = date
-modules-right = title backlight sp2 battery sp5 onlinestatus
+modules-right = title brightnessctl sp2 battery sp5 onlinestatus
 
 tray-position = center
 tray-padding = 0
@@ -375,6 +375,16 @@ label-indicator-on-numlock =
 label-indicator-off-numlock = 
 label-indicator-on-scrolllock = 
 label-indicator-off-scrolllock = 
+
+[module/brightnessctl]
+type = custom/script
+exec = ~/.config/polybar/scripts/brightnessctl.sh
+
+scroll-up = exec brightnessctl set +5%
+scroll-down = exec brightnessctl set 5%-
+interval = 0.5
+
+label = %output%
 
 [module/backlight]
 type = internal/backlight
