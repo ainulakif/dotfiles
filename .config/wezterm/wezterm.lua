@@ -153,7 +153,18 @@ wezterm.on("update-status", function(window, pane)
 --
 end)
 
--- wezterm.on("update-right-status", function(window, pane)
+wezterm.on("update-right-status", function(window, pane)
+
+  -- set indicator when leader key is pressed
+  local prefix = ""
+
+  if window:leader_is_active() then
+    prefix = "LEADER "
+  end
+
+  window:set_right_status(wezterm.format {
+    { Text = prefix },
+  })
 -- 	local name = window:active_key_table()
 -- 	local date = wezterm.strftime("%Y-%m-%d %H:%M:%S ")
 --
@@ -184,16 +195,17 @@ end)
 -- 		end
 --
 -- 		-- val = string.format("%.0f%%", val)
--- 	end
+-- end
 --
 -- 	window:set_left_status(wezterm.format({
 -- 		-- { Text = icon .. val },
 -- 		{ Text = icon },
 -- 	}))
--- end)
+end)
 
 -- leader
 config.leader = { key = "Space", mods = "SHIFT" }
+
 
 -- Keys
 config.keys = {
