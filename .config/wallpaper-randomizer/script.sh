@@ -13,11 +13,12 @@ CHILD="/rest"
 
 # Send a notification
 if [ "$1" == "work" ]; then
-  notify-send "Pomodoro Started 🍅"
+  notify-send "Started 🍅" --app-name="Timer"
   TARGET=$WALLPAPER_DIR
 elif [ "$1" == "break" ]; then
-  notify-send "Break Time! ☕"
-  TARGET=$WALLPAPER_DIR$CHILD
+  notify-send "Break Time ☕" --app-name="Timer"
+  # TARGET=$WALLPAPER_DIR$CHILD
+  TARGET=$WALLPAPER_DIR
 fi
 
 WALLPAPER=$(find "$TARGET" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.png" \) | shuf -n 1)
