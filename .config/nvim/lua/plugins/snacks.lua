@@ -324,7 +324,7 @@ return {
         enter = true,
         fixbuf = false,
         minimal = true,
-        width = 240,
+        width = 340,
         height = 30,
         backdrop = { transparent = true, blend = 80 },
         keys = { q = false },
