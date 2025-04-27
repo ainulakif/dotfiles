@@ -157,9 +157,14 @@ wezterm.on("update-right-status", function(window, pane)
 
   -- set indicator when leader key is pressed
   local prefix = ""
+  local name = window:active_key_table()
 
   if window:leader_is_active() then
-    prefix = "LEADER "
+    prefix = "  "
+  end
+
+  if name then
+    prefix = name
   end
 
   window:set_right_status(wezterm.format {
@@ -313,6 +318,9 @@ config.keys = {
 		}),
 	},
 
+  -- window:set_right_status(wezterm.format {
+  --   { Text = prefix },
+  -- })
   -- rebind key
   {
     key = 'L',
