@@ -65,7 +65,7 @@ font-4 = FontAwesome5Brands:style=Solid:pixelsize=10;3
 font-5 = Symbols Nerd Font Mono:style=Regular:size=9;3
 font-6 = Symbols Nerd Font Mono:style=Regular:size=13;3
 
-modules-left = i3 sp2 xkeyboard sp3 keystroke sp2
+modules-left = i3 sp2 xkeyboard sp3
 modules-center = date
 modules-right = title brightnessctl sp2 battery sp5 onlinestatus
 
@@ -161,10 +161,10 @@ label-separator =
 label-separator-padding = 0
 label-separator-foreground = #fff
 
-[module/keystroke]
-type = custom/script
-exec = cat /tmp/keystrokes.txt
-interval = 0.1
+;[module/keystroke]
+;type = custom/script
+;exec = cat /tmp/keystrokes.txt
+;interval = 0.1
 
 ;[module/info-hackspeed]
 ;type = custom/script

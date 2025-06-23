@@ -203,6 +203,7 @@ for_window [class="mpv"] floating enable
 for_window [class="imv"] floating enable
 for_window [class="zenity"] floating enable
 for_window [class="cachyos-welcome"] floating enable
+# for_window [title=".*EyeGestures.*"] floating enable
 
 # default_border normal 5
 
@@ -252,7 +253,6 @@ exec --no-startup-id xrandr --output HDMI-1 --mode 1920x1080 --rate 60 --scale 1
 #exec xrandr --auto --output HDMI-1 --mode 1920x1080 --above HDMI-2
 
 exec --no-startup-id feh --bg-fill /home/ainulakif/Pictures/wallpaper/night-big-tree.jpg
-exec --no-startup-id /home/ainulakif/.config/polybar/scripts/info-keylog.sh
 
 exec --no-startup-id dunst
 exec --no-startup-id picom
