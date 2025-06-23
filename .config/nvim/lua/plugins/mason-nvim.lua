@@ -14,9 +14,9 @@
 --       "html-lsp",
 --       "htmx-lsp",
 --       "tailwindcss-language-server",
---       "pyright",
---       "tsserver",
---       "lua_ls"
+--       -- "pyright",
+--       -- "tsserver",
+--       -- "lua_ls"
 --       -- marksman and markdownlint come by default in the lazyvim config
 --       --
 --       -- I installed markdown-toc as I use to to automatically create and upate
@@ -30,15 +30,15 @@ return {
     "williamboman/mason.nvim",
     version = "1.11.0",
     opts = {
-      ensure_installed = {
-        "templ",
-        "html-lsp",
-        "htmx-lsp",
-        "tailwindcss-language-server",
-        "pyright",
-        "tsserver",
-        "lua_ls"
-      },
+      -- ensure_installed = {
+      "templ",
+      "html-lsp",
+      "htmx-lsp",
+      --   "tailwindcss-language-server",
+      --   "pyright",
+      --   "tsserver",
+      --   "lua_ls"
+      -- },
     },
   },
   {
@@ -46,13 +46,13 @@ return {
     version = "1.32.0",
     opts = {
       ensure_installed = {
-        "templ",
-        "html-lsp",
-        "htmx-lsp",
-        "tailwindcss-language-server",
-        "pyright",
-        "tsserver",
-        "lua_ls"
+        -- "templ",
+        -- "html-lsp",
+        -- "htmx-lsp",
+        -- "tailwindcss-language-server",
+        -- "pyright",
+        -- "tsserver",
+        -- "lua_ls"
       },
     },
   },
