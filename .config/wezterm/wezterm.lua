@@ -13,6 +13,29 @@ local config = {}
 -- multiplexer layer
 local mux = wezterm.mux
 
+-- ssh hosts
+-- local ssh_domains = {}
+-- for host, config in pairs(wezterm.enumerate_ssh_hosts()) do
+--   table.insert(ssh_domains, {
+--     -- the name can be anything you want; we're just using the hostname
+--     name = host,
+--     -- remote_address must be set to `host` for the ssh config to apply to it
+--     remote_address = host,
+--
+--     -- if you don't have wezterm's mux server installed on the remote
+--     -- host, you may wish to set multiplexing = "None" to use a direct
+--     -- ssh connection that supports multiple panes/tabs which will close
+--     -- when the connection is dropped.
+--
+--     -- multiplexing = "None",
+--
+--     -- if you know that the remote host has a posix/unix environment,
+--     -- setting assume_shell = "Posix" will result in new panes respecting
+--     -- the remote current directory when multiplexing = "None".
+--     assume_shell = 'Posix',
+--   })
+-- end
+
 -- Color scheme
 config.color_scheme = "Catppuccin Mocha (Gogh)"
 -- config.enable_bracket_paste = false
@@ -133,7 +156,7 @@ config.animation_fps = 1
 config.cursor_blink_ease_in = "Constant"
 
 -- status
-wezterm.on("update-status", function(window, pane)
+-- wezterm.on("update-status", function(window, pane)
 --   local overrides = window:get_config_overrides() or {}
 --   local win_id = window:window_id()
 --
@@ -151,7 +174,7 @@ wezterm.on("update-status", function(window, pane)
 --   -- window:set_config_override(overrides)
 --   window:set_config_override({enable_tab_bar = true})
 --
-end)
+-- end)
 
 wezterm.on("update-right-status", function(window, pane)
 
@@ -210,7 +233,6 @@ end)
 
 -- leader
 config.leader = { key = "Space", mods = "SHIFT" }
-
 
 -- Keys
 config.keys = {
@@ -285,6 +307,17 @@ config.keys = {
 		mods = "CTRL|SHIFT|ALT",
 		action = act.AdjustPaneSize({ "Right", 5 }),
 	},
+
+  {
+    key = "PageUp",
+    mods = "CTRL",
+    action = act.ActivateTabRelative(-1),
+  },
+  -- {
+  --   key = "KP_3",
+  --   mods = "CTRL",
+  --   action = wezterm.action.ActivateTabRelative(1),
+  -- },
 
 	-- activate pane in direction
 	{
@@ -375,6 +408,13 @@ config.key_tables = {
 config.use_dead_keys = false
 config.scrollback_lines = 5000
 
+-- Quick select patterns
+config.quick_select_patterns = {
+  -- Commit messages like "fix: message" or "refactor(scope): message"
+  -- '%a+:%s+.+',
+  -- '%a+%b()%s*:%s+.+',
+}
+
 -- Plugins config
 
 -- modalWezterm.apply_to_config(config)
@@ -399,6 +439,9 @@ quick_domains.apply_to_config(config, {
 			tbl = "",
 		},
 	},
+  -- auto = {
+  --   ssh_ignore = true,
+  -- },
 })
 
 -- Return the configuration to wezterm
