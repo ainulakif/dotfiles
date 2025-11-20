@@ -1,0 +1,2038 @@
+-- --- Basic usability ---
+
+vim.opt.compatible = false -- Disable vi-compatibility
+
+vim.opt.number = true -- Show line numbers
+
+vim.opt.relativenumber = true -- Relative line numbers
+
+vim.opt.cursorline = true -- Highlight current line
+
+vim.opt.wrap = false -- Disable wrapping
+
+vim.cmd("syntax on") -- Enable syntax highlighting
+
+vim.cmd("filetype plugin indent on") -- Enable filetype-specific settings
+
+vim.opt.mouse = "a" -- Enable mouse support
+
+vim.opt.clipboard = "unnamedplus" -- System clipboard integration
+
+vim.opt.swapfile = false -- Don’t create swap files
+
+vim.opt.backup = false -- Don’t create backup files
+
+vim.opt.undofile = true -- Persistent undo
+
+vim.opt.termguicolors = true -- True color support
+
+vim.opt.numberwidth = 2 -- minimum 2 cols, grows if >99 lines
+
+vim.opt.signcolumn = "auto" -- Always show sign column
+
+vim.o.scrolloff = 7
+
+
+
+-- --- Tabs and indentation ---
+
+vim.opt.tabstop = 4 -- 1 tab = 4 spaces
+
+vim.opt.shiftwidth = 4 -- Indent by 4 spaces
+
+vim.opt.expandtab = true -- Use spaces instead of tabs
+
+vim.opt.smartindent = true -- Smart auto-indenting
+
+
+
+-- --- Search ---
+
+vim.opt.hlsearch = true -- Highlight search results
+
+vim.opt.incsearch = true -- Incremental search
+
+vim.opt.ignorecase = true -- Case-insensitive search...
+
+vim.opt.smartcase = true -- ...unless there's a capital letter
+
+
+
+-- --- Status and visuals ---
+
+vim.opt.ruler = true -- Show cursor position
+
+vim.opt.showcmd = true -- Show incomplete commands
+
+vim.opt.showmode = true -- Show current mode
+
+vim.opt.laststatus = 2 -- Always show status line
+
+vim.api.nvim_create_autocmd("VimResized", { -- Auto-normalize after terminal resize
+
+callback = function() vim.cmd("wincmd =") end,
+
+})
+
+
+
+-- --- Cursor shape (for terminals like WezTerm, iTerm2, etc.) ---
+
+vim.opt.guicursor = {
+
+"n-v-c:block", -- solid block in normal
+
+"i-ci:ver25-blinkwait700-blinkon400-blinkoff250", -- slim, gentle blink in insert
+
+"r-cr:hor20-blinkwait700-blinkon400-blinkoff250", -- replace = thin underline
+
+"o:hor50", -- operator-pending: half underline
+
+}
+
+
+
+-- --- Better backspace ---
+
+vim.opt.backspace = { "indent", "eol", "start" }
+
+
+
+-- --- File encoding ---
+
+vim.opt.encoding = "utf-8"
+
+vim.opt.fileencoding = "utf-8"
+
+
+
+-- --- Faster updates ---
+
+vim.opt.updatetime = 300
+
+
+
+-- --- Custom leader key ---
+
+vim.g.mapleader = " "
+
+
+
+-- --- Save on sudo workaround ---
+
+vim.keymap.set("c", "w!!", "w !sudo tee > /dev/null %", { noremap = true })
+
+
+
+-- Toggle line wrapping
+
+vim.keymap.set("n", "<leader>uw", function()
+
+vim.cmd("set wrap!")
+
+end, { desc = "Toggle line wrap" })
+
+
+
+-- Easier save/quit
+
+-- vim.keymap.set("n", "<leader>w", ":w<CR>")
+
+vim.keymap.set("n", "<leader>qq", ":qa<CR>")
+
+vim.keymap.set("i", "<C-S>", "<Esc>:w<CR>", { noremap = true })
+
+vim.keymap.set("n", "<C-S>", "<Esc>:w<CR>", { noremap = true })
+
+
+
+-- Better window navigation
+
+vim.keymap.set("n", "<C-h>", "<C-w>h")
+
+vim.keymap.set("n", "<C-j>", "<C-w>j")
+
+vim.keymap.set("n", "<C-k>", "<C-w>k")
+
+vim.keymap.set("n", "<C-l>", "<C-w>l")
+
+
+
+-- Map Ctrl+Backspace to delete a word backward
+
+vim.keymap.set('i', '<C-BS>', '<C-w>', { desc = 'Delete word backward' })
+
+vim.keymap.set('c', '<C-BS>', '<C-w>', { desc = 'Delete word backward' })
+
+
+
+-- Toggle zoom (maximize current window)
+
+local function is_zoomed()
+
+return vim.fn.tabpagenr('$') > 1 and vim.fn.winnr('$') == 1
+
+end
+
+
+
+vim.keymap.set("n", "<leader>uz", function()
+
+if is_zoomed() then
+
+vim.cmd("tabclose") -- close the tab to go back
+
+else
+
+vim.cmd("tab split") -- put current window in its own tab
+
+end
+
+end, { desc = "Toggle Zoom" })
+
+
+
+-- Close Window (aware of zoom state)
+
+vim.keymap.set("n", "<leader>wd", function()
+
+if is_zoomed() then
+
+vim.cmd("tabclose")
+
+else
+
+vim.cmd("close")
+
+end
+
+end, { desc = "Close Window" })
+
+
+
+-- Buffer management keymaps
+
+-- <leader>bd => delete current buffer
+
+vim.keymap.set("n", "<leader>bd", function()
+
+require("snacks").bufdelete()
+
+end, { desc = "Delete Buffer" })
+
+
+
+-- <leader>bb => switch to alternate buffer (same as Ctrl-^ / Ctrl-6)
+
+vim.keymap.set("n", "<leader>bb", "<C-^>", { desc = "Switch to Alternate Buffer" })
+
+
+
+-- <leader>bo => delete all buffers except current
+
+vim.keymap.set("n", "<leader>bo", function()
+
+local current = vim.api.nvim_get_current_buf()
+
+for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+
+if vim.api.nvim_buf_is_loaded(buf) and buf ~= current then
+
+require("snacks").bufdelete(buf)
+
+end
+
+end
+
+end, { desc = "Delete Other Buffers" })
+
+
+
+-- Clear search highlights on Esc
+
+vim.keymap.set("n", "<Esc>", function()
+
+vim.cmd.nohlsearch()
+
+end, { desc = "Clear search highlight" })
+
+
+
+-- Highlight yanked text briefly
+
+vim.api.nvim_create_autocmd("TextYankPost", {
+
+callback = function()
+
+vim.highlight.on_yank({ higroup = "IncSearch", timeout = 113 })
+
+end,
+
+})
+
+
+
+--
+
+-- Transparency Theme
+
+vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
+
+
+
+-- Plugin manager
+
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+
+if not vim.loop.fs_stat(lazypath) then
+
+vim.fn.system({"git","clone","--filter=blob:none",
+
+"https://github.com/folke/lazy.nvim.git","--branch=stable", lazypath})
+
+end
+
+vim.opt.rtp:prepend(lazypath)
+
+
+
+require("lazy").setup({
+
+-- {
+
+-- "catppuccin/nvim",
+
+-- name = "catppuccin",
+
+-- lazy = false, -- load at startup
+
+-- priority = 1000, -- before other UI plugins
+
+-- opts = {
+
+-- flavour = "mocha",
+
+-- transparent_background = true, -- let WezTerm opacity show through
+
+-- term_colors = true,
+
+-- },
+
+-- config = function(_, opts)
+
+-- require("catppuccin").setup(opts)
+
+-- vim.cmd.colorscheme("catppuccin")
+
+-- end,
+
+-- },
+
+{
+
+"neanias/everforest-nvim",
+
+version = false,
+
+lazy = false,
+
+priority = 1000, -- make sure to load this before all the other start plugins
+
+-- Optional; default configuration will be used if setup isn't called.
+
+config = function()
+
+require("everforest").setup({
+
+-- Your config here
+
+transparent_background_level = 1,
+
+ui_contrast = "high"
+
+})
+
+end,
+
+},
+
+{ "tpope/vim-surround", event = "VeryLazy" },
+
+{ "numToStr/Comment.nvim" },
+
+{ "JoosepAlviste/nvim-ts-context-commentstring" }, -- optional (JSX/TSX, etc.)
+
+{ "windwp/nvim-autopairs",
+
+event = "InsertEnter",
+
+config = true
+
+},
+
+{
+
+"echasnovski/mini.files",
+
+version = false, -- always latest
+
+lazy = false,
+
+config = function()
+
+require("mini.files").setup({
+
+-- Basic minimal setup
+
+mappings = {
+
+go_in = 'l',
+
+go_in_plus= '<CR>',
+
+go_out = 'h',
+
+go_out_plus = 'H',
+
+reset = '<BS>',
+
+},
+
+options = {
+
+use_as_default_explorer = false, -- don't override netrw unless you want to
+
+},
+
+})
+
+
+
+-- Keymap to toggle mini.files in current working directory
+
+vim.keymap.set("n", "<leader>e", function()
+
+require("mini.files").open(vim.api.nvim_buf_get_name(0), true)
+
+end, { desc = "Open Mini Files" })
+
+end,
+
+},
+
+{
+
+"folke/neodev.nvim", opts = {}
+
+},
+
+{
+
+"williamboman/mason.nvim",
+
+build = ":MasonUpdate",
+
+config = function()
+
+require("mason").setup()
+
+end,
+
+},
+
+{ "neovim/nvim-lspconfig"},
+
+-- Mason-LSP bridge to nvim-lspconfig
+
+{
+
+"williamboman/mason-lspconfig.nvim",
+
+dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
+
+config = function()
+
+-- if vim.g._mlsp_boot_done then return end
+
+-- vim.g._mlsp_boot_done = true
+
+local mlsp = require("mason-lspconfig")
+
+local lspconfig = require("lspconfig")
+
+
+
+-- 1) Make sure mason is initialized
+
+require("mason").setup({})
+
+
+
+-- 2) Servers you want
+
+local servers = {
+
+"lua_ls",
+
+"bashls",
+
+"intelephense",
+
+-- add more: "jsonls", "tsserver", ...
+
+}
+
+
+
+mlsp.setup({ ensure_installed = servers })
+
+
+
+-- 3) Shared capabilities (safe even if cmp is missing)
+
+local ok_cmp, cmp_lsp = pcall(require, "cmp_nvim_lsp")
+
+local capabilities = ok_cmp and cmp_lsp.default_capabilities() or vim.lsp.protocol.make_client_capabilities()
+
+
+
+-- 4) on_attach (keep it resilient)
+
+local function safe(fn)
+
+return function(...) pcall(fn, ...) end
+
+end
+
+
+
+local function on_attach(_, bufnr)
+
+local o = { buffer = bufnr, silent = true }
+
+local function goto_first_definition()
+
+local params = vim.lsp.util.make_position_params()
+
+vim.lsp.buf_request_all(0, "textDocument/definition", params, function(results)
+
+local all = {}
+
+local function normalize(result) return (type(result) == "table" and result[1]) and result or { result } end
+
+for _, res in pairs(results) do
+
+if res and res.result then
+
+for _, loc in ipairs(normalize(res.result)) do
+
+local uri = loc.uri or loc.targetUri
+
+if type(uri) == "string" and uri:match("^file://") then
+
+table.insert(all, loc)
+
+end
+
+end
+
+end
+
+end
+
+if #all > 0 then vim.lsp.util.jump_to_location(all[1], "utf-8", true) end
+
+end)
+
+end
+
+
+
+vim.keymap.set("n", "gd", goto_first_definition, o)
+
+vim.keymap.set("n", "K", vim.lsp.buf.hover, o)
+
+vim.keymap.set("n", "gD", safe(function() require("snacks").picker.lsp_declarations() end), o)
+
+vim.keymap.set("n", "gr", safe(function() require("snacks").picker.lsp_references() end), o)
+
+end
+
+vim.api.nvim_create_autocmd("LspAttach", {
+
+callback = function(args)
+
+local client = vim.lsp.get_client_by_id(args.data.client_id)
+
+if not client or client.name ~= "intelephense" then return end
+
+
+
+-- if settings are empty, that's the rogue one
+
+local settings = client.config.settings or {}
+
+if vim.tbl_isempty(settings) then
+
+vim.schedule(function() client.stop() end)
+
+return
+
+end
+
+
+
+-- else: it's your configured intelephense, keep it
+
+end,
+
+})
+
+vim.g._lsp_configured = vim.g._lsp_configured or {}
+
+-- 5) Per‑server config
+
+local function setup_server(name)
+
+-- hard guard: skip if we already configured this server
+
+if vim.g._lsp_configured[name] then
+
+return
+
+end
+
+vim.g._lsp_configured[name] = true
+
+
+
+local cfg = { on_attach = on_attach, capabilities = capabilities }
+
+if name == "lua_ls" then
+
+cfg.settings = {
+
+Lua = {
+
+runtime = { version = "LuaJIT" },
+
+diagnostics = { globals = { "vim" } },
+
+workspace = { checkThirdParty = false, library = { vim.env.VIMRUNTIME } },
+
+telemetry = { enable = false },
+
+},
+
+}
+
+elseif name == "bashls" then
+
+cfg.filetypes = { "sh", "bash", "zsh" } -- extend to zsh if you want
+
+elseif name == "intelephense" then
+
+cfg.settings = {
+
+intelephense = {
+
+files = {
+
+associations = { "*.php" },
+
+maxSize = 5000000,
+
+},
+
+diagnostics = {
+
+enable = true,
+
+},
+
+},
+
+}
+
+end
+
+lspconfig[name].setup(cfg)
+
+end
+
+
+
+-- 6) New API if available; otherwise fallback
+
+if type(mlsp.setup_handlers) == "function" then
+
+mlsp.setup_handlers({
+
+function(server) setup_server(server) end,
+
+-- ["lua_ls"] = function() setup_server("lua_ls") end,
+
+-- ["bashls"] = function() setup_server("bashls") end,
+
+-- ["intelephense"] = function() setup_server("intelephense") end,
+
+})
+
+else
+
+-- Older mason-lspconfig
+
+for _, server in ipairs(mlsp.get_installed_servers()) do
+
+setup_server(server)
+
+end
+
+end
+
+end,
+
+}
+
+,
+
+-- { "nvim-telescope/telescope.nvim",
+
+-- dependencies = { "nvim-lua/plenary.nvim" },
+
+-- cmd = "Telescope"
+
+-- },
+
+{
+
+"folke/snacks.nvim",
+
+lazy = false, -- Load immediately for quickfile/picker
+
+priority = 1000, -- Load before other UI plugins
+
+opts = {
+
+-- Enable only what you actually use for a lean setup
+
+picker = {
+
+enabled = true, -- Fuzzy picker
+
+-- Basic defaults
+
+-- layout: keep simple; vertical/horizontal/flex presets vary across versions,
+
+-- so use a table to be safe.
+
+-- layout = { position = "bottom" },
+
+-- preview = { enabled = true }, -- enable preview pane
+
+sorting = "fzy", -- sorting algorithm ("fzy", "fzf")
+
+prompt = "❯ ", -- custom prompt
+
+-- Optional: limit max results for speed
+
+max_results = 2000,
+
+matcher = {
+
+frecency = true,
+
+},
+
+win = {
+
+input = {
+
+keys = {
+
+-- ["<Esc>"] = { "close", mode = { "n", "i" } },
+
+-- navigation
+
+["<C-j>"] = { "list_down", mode = { "i", "n" } },
+
+["<C-k>"] = { "list_up", mode = { "i", "n" } },
+
+["<PageDown>"] = { "preview_scroll_down", mode = { "i", "n"} },
+
+["<PageUp>"] = { "preview_scroll_up", mode = { "i", "n"} },
+
+}
+
+},
+
+preview = {
+
+keys = {
+
+-- open in normal mode instead of insert
+
+["i"] = false, -- disable auto-insert
+
+}
+
+},
+
+},
+
+},
+
+bufdelete = { enabled = true }, -- Close buffers without messing windows
+
+quickfile = { enabled = true }, -- Fast startup for one-off file edits
+
+lazygit = { enabled = true },
+
+dashboard = { enabled = true },
+
+statuscolumn = { enabled = true },
+
+
+
+-- All others disabled for minimal profile
+
+indent = { enabled = false },
+
+notifier = { enabled = false },
+
+gitbrowse = { enabled = false },
+
+dim = { enabled = false },
+
+animate = { enabled = false },
+
+image = { enabled = false },
+
+},
+
+config = function (_,opts)
+
+-- snacks.picker config
+
+local snacks = require("snacks")
+
+snacks.setup(opts)
+
+-- Find files in cwd
+
+vim.keymap.set("n", "<leader>ff", function()
+
+snacks.picker.files({})
+
+end, { desc = "Find Files" })
+
+
+
+-- Search in files (ripgrep required)
+
+vim.keymap.set("n", "<leader>sg", function()
+
+snacks.picker.grep({ live = true })
+
+end, { desc = "Live Grep" })
+
+
+
+-- Buffers
+
+vim.keymap.set("n", "<leader>fb", function()
+
+snacks.picker.buffers({})
+
+end, { desc = "Find Buffers" })
+
+
+
+-- Recent files
+
+vim.keymap.set("n", "<leader>fr", function()
+
+snacks.picker.recent({})
+
+end, { desc = "Recent Files" })
+
+end,
+
+},
+
+-- Treesitter
+
+{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+
+{ "nvim-treesitter/nvim-treesitter-textobjects" }, -- motions & objects
+
+{ "nvim-treesitter/nvim-treesitter-context" }, -- sticky context
+
+{ "windwp/nvim-ts-autotag" }, -- auto-close HTML/JSX tags
+
+-- cmp
+
+{
+
+"hrsh7th/nvim-cmp",
+
+event = { "InsertEnter", "CmdlineEnter" },
+
+dependencies = {
+
+"hrsh7th/cmp-nvim-lsp",
+
+"hrsh7th/cmp-path",
+
+"hrsh7th/cmp-buffer", -- optional
+
+"hrsh7th/cmp-cmdline", -- for ":" and "/" completion
+
+"neovim/nvim-lspconfig",
+
+},
+
+config = function()
+
+local cmp = require("cmp")
+
+
+
+-- Core completion (Insert mode)
+
+cmp.setup({
+
+completion = { completeopt = "menu,menuone,noselect" },
+
+mapping = cmp.mapping.preset.insert({
+
+["<C-Space>"] = cmp.mapping.complete(), -- manually trigger
+
+["<CR>"] = cmp.mapping.confirm({ select = true }),
+
+["<Tab>"] = cmp.mapping.select_next_item(),
+
+["<S-Tab>"] = cmp.mapping.select_prev_item(),
+
+}),
+
+sources = cmp.config.sources({
+
+{ name = "nvim_lsp" },
+
+{ name = "path" },
+
+-- { name = "buffer" }, -- enable if you want words from current buffer
+
+}),
+
+})
+
+
+
+-- Cmdline: ":" → path + cmdline
+
+cmp.setup.cmdline(":", {
+
+completion = { autocomplete = false }, -- <-- key line
+
+mapping = cmp.mapping.preset.cmdline(),
+
+sources = cmp.config.sources(
+
+{ { name = "path" } },
+
+{ { name = "cmdline" } }
+
+),
+
+})
+
+
+
+-- Cmdline: search ("/" and "?") → buffer
+
+cmp.setup.cmdline({ "/", "?" }, {
+
+mapping = cmp.mapping.preset.cmdline(),
+
+sources = { { name = "buffer" } },
+
+})
+
+
+
+-- Minimal LSP wiring so LSP suggestions appear
+
+-- local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+-- local lsp = require("lspconfig")
+
+
+
+-- Hook whatever servers you use; examples:
+
+-- PHP (pick one you use)
+
+-- lsp.intelephense.setup({ capabilities = capabilities })
+
+-- lsp.phpactor.setup({ capabilities = capabilities })
+
+-- lsp.bashls.setup({ capabilities = capabilities })
+
+-- Lua example (if you edit Lua configs)
+
+-- lsp.lua_ls.setup({ capabilities = capabilities })
+
+end,
+
+},
+
+})
+
+
+
+-- Open Yazi in a floating terminal and open the selected file in-place
+
+vim.keymap.set("n", "<leader>-", function()
+
+local parent_win = vim.api.nvim_get_current_win()
+
+local tmpfile = vim.fn.tempname() .. ".yazi"
+
+local buf = vim.api.nvim_create_buf(false, true)
+
+
+
+local width = math.floor(vim.o.columns * 0.9)
+
+local height = math.floor(vim.o.lines * 0.9)
+
+local row = math.floor((vim.o.lines - height) / 2)
+
+local col = math.floor((vim.o.columns - width) / 2)
+
+
+
+local win = vim.api.nvim_open_win(buf, true, {
+
+relative = "editor",
+
+row = row, col = col, width = width, height = height,
+
+style = "minimal", border = "rounded",
+
+})
+
+
+
+-- run yazi with a chooser that writes the selection path to tmpfile
+
+-- (use whatever args you already had working)
+
+vim.fn.termopen({ "yazi", "--chooser-file", tmpfile }, {
+
+on_exit = function()
+
+-- close float first & restore focus to parent window
+
+pcall(vim.api.nvim_win_close, win, true)
+
+if vim.api.nvim_win_is_valid(parent_win) then
+
+pcall(vim.api.nvim_set_current_win, parent_win)
+
+end
+
+
+
+-- open the selected file on the next tick to avoid race conditions
+
+vim.schedule(function()
+
+if vim.loop.fs_stat(tmpfile) then
+
+local lines = vim.fn.readfile(tmpfile)
+
+-- handle multi-select; open the first for now
+
+local sel = (lines[1] or ""):gsub("^%s+", ""):gsub("%s+$", "")
+
+if #sel > 0 then
+
+-- if it's a directory, open yazi's dir in nvim; else edit file
+
+local stat = vim.loop.fs_stat(sel)
+
+if stat and stat.type == "directory" then
+
+vim.cmd("cd " .. vim.fn.fnameescape(sel))
+
+-- optional: open mini.files/snacks.picker here if you want
+
+require("mini.files").open(sel, true)
+
+else
+
+vim.cmd.edit(vim.fn.fnameescape(sel))
+
+end
+
+end
+
+pcall(vim.loop.fs_unlink, tmpfile)
+
+end
+
+end)
+
+end,
+
+})
+
+
+
+vim.cmd.startinsert()
+
+end, { desc = "Yazi picker (float)" })
+
+
+
+-- Brighter line numbers
+
+vim.api.nvim_set_hl(0, "LineNr", { fg = "#d0d0d0" }) -- normal numbers
+
+vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#ffffff", bold = true }) -- current line number
+
+
+
+--
+
+-- lazygit config
+
+vim.keymap.set("n", "<leader>gg", function()
+
+require("snacks").lazygit()
+
+end, { desc = "Open LazyGit" })
+
+
+
+
+
+-- 3) Comment.nvim setup
+
+require("Comment").setup({
+
+-- keep defaults; they include gcc/gc
+
+-- If you use ts-context-commentstring:
+
+pre_hook = function(ctx)
+
+-- Only needed if you installed nvim-ts-context-commentstring AND want treesitter-aware comments
+
+local ok, ts = pcall(require, "ts_context_commentstring.integrations.comment_nvim")
+
+if ok then
+
+return ts.create_pre_hook()(ctx)
+
+end
+
+end,
+
+})
+
+
+
+-- 4) Force // for PHP single-line comments
+
+-- vim.api.nvim_create_autocmd("FileType", {
+
+-- pattern = "php",
+
+-- callback = function() vim.bo.commentstring = "// %s" end,
+
+-- })
+
+
+
+-- 5) nvim-autopairs setup (auto brackets)
+
+require("nvim-autopairs").setup({})
+
+
+
+-- Treesitter core
+
+require("nvim-treesitter.configs").setup({
+
+ensure_installed = {
+
+"lua", "php", "javascript", "typescript", "html", "css", "json", "yaml", "bash",
+
+"markdown", "markdown_inline", "vim", "query"
+
+},
+
+sync_install = false,
+
+auto_install = true,
+
+
+
+highlight = {
+
+enable = true,
+
+additional_vim_regex_highlighting = false,
+
+},
+
+
+
+indent = { enable = true }, -- smarter indent
+
+
+
+incremental_selection = {
+
+enable = true,
+
+keymaps = {
+
+init_selection = "gnn", -- start selection
+
+node_incremental = "grn", -- expand to node
+
+scope_incremental = "grc", -- expand to scope
+
+node_decremental = "grm", -- shrink
+
+},
+
+},
+
+
+
+textobjects = {
+
+select = {
+
+enable = true,
+
+lookahead = true,
+
+keymaps = {
+
+["af"] = "@function.outer",
+
+["if"] = "@function.inner",
+
+["ac"] = "@class.outer",
+
+["ic"] = "@class.inner",
+
+},
+
+},
+
+move = {
+
+enable = true,
+
+set_jumps = true,
+
+goto_next_start = { ["]m"] = "@function.outer", ["]]"] = "@class.outer" },
+
+goto_previous_start = { ["[m"] = "@function.outer", ["[["] = "@class.outer" },
+
+},
+
+},
+
+})
+
+
+
+-- Treesitter context (sticky function/class headers at top)
+
+require("treesitter-context").setup({
+
+enable = true,
+
+max_lines = 2, -- how many context lines to show (0 = unlimited)
+
+mode = "cursor", -- or "topline"
+
+multiline_threshold = 1, -- show every line of context, not compressed
+
+trim_scope = 'outer', -- 'inner' or 'outer'
+
+line_numbers = true, -- show line numbers in context
+
+separator = nil, -- remove the ───── line
+
+})
+
+
+
+-- Folding with treesitter
+
+vim.o.foldmethod = "expr"
+
+vim.o.foldexpr = "nvim_treesitter#foldexpr()"
+
+vim.o.foldenable = true
+
+vim.o.foldlevel = 99
+
+
+
+-- Force it to use normal window highlight
+
+vim.api.nvim_set_hl(0, "TreesitterContext", { link = "Normal" })
+
+vim.api.nvim_set_hl(0, "TreesitterContextLineNumber", { link = "LineNr" })
+
+-- Auto-tag (HTML, JSX, PHP templates)
+
+require("nvim-ts-autotag").setup()
+
+
+
+-- :TipsPick -> choose a file in ~/tips via rofi, then call your zsh function
+
+vim.api.nvim_create_user_command("TipsPick", function()
+
+local cmd = [[cd ~/Documents/notes/vim && find . -maxdepth 1 -type f -printf '%f\n' \
+
+| rofi -dmenu -p 'tips' \
+
+| xargs -r -I{} zsh -ic 'source ~/.config/oh-my-zsh/custom/plugins/nvim/tips.zsh; tips "$PWD/{}"' ]]
+
+vim.fn.jobstart({ "bash", "-lc", cmd })
+
+
+
+end, {})
+
+
+
+-- optional keymap
+
+vim.keymap.set("n", "<leader>tp", function()
+
+    local cmd = [[cd ~/Documents/notes/vim && find . -maxdepth 1 -type f -printf '%f\n' \
+                | rofi -dmenu -p 'tips' \
+                | xargs -r -I{} zsh -ic 'source ~/.config/oh-my-zsh/custom/plugins/nvim/tips.zsh; tips "$PWD/{}"' ]]
+
+    vim.fn.jobstart({ "bash", "-lc", cmd })
+
+end, { desc = "Pick tips file via rofi" })
+
+
+
+-- vim.o.updatetime = 300
+
+-- vim.api.nvim_create_autocmd("CursorHold", {
+
+-- callback = function()
+
+-- vim.diagnostic.open_float(nil, { focus = false })
+
+-- end,
+
+-- })
+
+
+
+-- function _G.diagnostics_summary()
+
+-- local e = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
+
+-- local w = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
+
+-- return (e > 0 and "Err: " .. e .. " " or "") .. (w > 0 and "Warn: " .. w or "")
+
+-- end
+
+--
+
+-- vim.o.statusline = "%f %m %= %{%v:lua.diagnostics_summary()%}"
+
+--
+
+-- Transparent floats & popups
+
+-- vim.opt.winblend = 0 -- no pseudo-transparency mixing
+
+
+
+-- Helper: pick most severe diagnostic on the current line, return hl group + text
+
+local function _diag_line_text(maxlen)
+
+local line = vim.api.nvim_win_get_cursor(0)[1] - 1
+
+local diags = vim.diagnostic.get(0, { lnum = line })
+
+if #diags == 0 then return nil end
+
+
+
+-- Pick the most severe (lower number = higher severity)
+
+table.sort(diags, function(a, b) return a.severity < b.severity end)
+
+local d = diags[1]
+
+
+
+local hl_by_sev = {
+
+[vim.diagnostic.severity.ERROR] = "DiagnosticError",
+
+[vim.diagnostic.severity.WARN] = "DiagnosticWarn",
+
+[vim.diagnostic.severity.INFO] = "DiagnosticInfo",
+
+[vim.diagnostic.severity.HINT] = "DiagnosticHint",
+
+}
+
+
+
+local msg = d.message:gsub("\n", " ")
+
+maxlen = maxlen or 80
+
+if vim.fn.strdisplaywidth(msg) > maxlen then
+
+msg = vim.fn.strcharpart(msg, 0, maxlen) .. "…"
+
+end
+
+
+
+return hl_by_sev[d.severity] or "StatusLine", msg
+
+end
+
+
+
+-- Public: used by statusline
+
+function _G.diag_or_path()
+
+-- Try diagnostic first
+
+local hl, text = _diag_line_text(80)
+
+if hl and text and #text > 0 then
+
+-- Switch to the diagnostic highlight, print text, then reset (%*)
+
+return table.concat({ "%#", hl, "#", " ", text, " ", "%*" })
+
+end
+
+-- Fallback: default filepath
+
+return "%f"
+
+end
+
+
+
+-- Counts only (for right side of statusline)
+
+function _G.diag_counts()
+
+local diags = vim.diagnostic.get(0) -- all diagnostics in current buffer
+
+local counts = {
+
+[vim.diagnostic.severity.ERROR] = 0,
+
+[vim.diagnostic.severity.WARN] = 0,
+
+[vim.diagnostic.severity.INFO] = 0,
+
+[vim.diagnostic.severity.HINT] = 0,
+
+}
+
+
+
+for _, d in ipairs(diags) do
+
+counts[d.severity] = counts[d.severity] + 1
+
+end
+
+
+
+local parts = {}
+
+if counts[vim.diagnostic.severity.ERROR] > 0 then
+
+table.insert(parts, "E:" .. counts[vim.diagnostic.severity.ERROR])
+
+end
+
+if counts[vim.diagnostic.severity.WARN] > 0 then
+
+table.insert(parts, "W:" .. counts[vim.diagnostic.severity.WARN])
+
+end
+
+if counts[vim.diagnostic.severity.INFO] > 0 then
+
+table.insert(parts, "I:" .. counts[vim.diagnostic.severity.INFO])
+
+end
+
+if counts[vim.diagnostic.severity.HINT] > 0 then
+
+table.insert(parts, "H:" .. counts[vim.diagnostic.severity.HINT])
+
+end
+
+
+
+return table.concat(parts, " ")
+
+end
+
+
+
+-- Set a simple statusline that starts with our diag text OR filepath.
+
+-- (Right side shows line:col and percent through file)
+
+-- Statusline: left = diag_or_path(), right = counts + line/col/percent
+
+vim.o.statusline = "%{%v:lua.diag_or_path()%} %=%{%v:lua.diag_counts()%} %l:%c %p%%"
+
+
+
+-- Keep it live: redraw when diagnostics or cursor move
+
+vim.api.nvim_create_autocmd({ "DiagnosticChanged", "CursorMoved", "CursorHold", "InsertLeave" }, {
+
+callback = function() vim.cmd("redrawstatus") end,
+
+})
+
+
+
+-- local function transparent_floats()
+
+-- local groups = {
+
+-- "NormalFloat", "FloatBorder", "FloatTitle", "FloatFooter",
+
+-- "Pmenu", "PmenuSel", "PmenuSbar", "PmenuThumb",
+
+-- "WhichKeyFloat", "MsgArea", "MsgSeparator",
+
+-- }
+
+-- for _, g in ipairs(groups) do
+
+-- -- keep fg as-is, just clear background
+
+-- local cur = vim.api.nvim_get_hl(0, { name = g, link = false }) or {}
+
+-- cur.bg = "none"
+
+-- vim.api.nvim_set_hl(0, g, cur)
+
+-- end
+
+--
+
+-- -- Also ensure regular Normal stays transparent
+
+-- local normal = vim.api.nvim_get_hl(0, { name = "Normal", link = false }) or {}
+
+-- normal.bg = "none"
+
+-- vim.api.nvim_set_hl(0, "Normal", normal)
+
+--
+
+-- -- Floats often link to Normal; make it explicit
+
+-- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+
+-- end
+
+--
+
+-- -- Apply now and on any colorscheme change
+
+-- transparent_floats()
+
+-- vim.api.nvim_create_autocmd("ColorScheme", {
+
+-- callback = transparent_floats,
+
+-- })
+
+-- setup must be called before loading
+
+-- vim.cmd.colorscheme "catppuccin"
+
+vim.cmd([[colorscheme everforest]])
+
+
+-- -- init.lua
+-- -- REV: Using locals for functions and consistent vim.opt for clarity.
+--
+-- -- --- Basic Usability ---
+-- vim.opt.compatible = false                 -- Disable vi-compatibility
+-- vim.opt.number = true                      -- Show line numbers
+-- vim.opt.relativenumber = true              -- Relative line numbers
+-- vim.opt.cursorline = true                  -- Highlight current line
+-- vim.opt.wrap = false                       -- Disable wrapping
+-- vim.opt.mouse = "a"                        -- Enable mouse support
+-- vim.opt.clipboard = "unnamedplus"          -- System clipboard integration
+-- vim.opt.swapfile = false                   -- Don’t create swap files
+-- vim.opt.backup = false                     -- Don’t create backup files
+-- vim.opt.undofile = true                    -- Persistent undo
+-- vim.opt.termguicolors = true               -- True color support
+-- vim.opt.numberwidth = 2                    -- Minimum 2 cols for line numbers
+-- vim.opt.signcolumn = "yes:1"               -- REV: "yes:1" prevents layout shift, more stable than "auto"
+-- vim.opt.scrolloff = 7                      -- Lines of context around cursor
+-- vim.opt.laststatus = 2                     -- Always show status line
+-- vim.opt.showcmd = true                     -- Show incomplete commands
+-- vim.opt.showmode = true                    -- Show current mode
+-- vim.opt.ruler = true                       -- Show cursor position
+--
+-- -- --- Tabs and Indentation ---
+-- vim.opt.tabstop = 4                        -- 1 tab = 4 spaces
+-- vim.opt.shiftwidth = 4                     -- Indent by 4 spaces
+-- vim.opt.expandtab = true                   -- Use spaces instead of tabs
+-- vim.opt.smartindent = true                 -- Smart auto-indenting
+--
+-- -- --- Search ---
+-- vim.opt.hlsearch = true                    -- Highlight search results
+-- vim.opt.incsearch = true                   -- Incremental search
+-- vim.opt.ignorecase = true                  -- Case-insensitive search...
+-- vim.opt.smartcase = true                   -- ...unless there's a capital letter
+--
+-- -- --- Performance & Behavior ---
+-- vim.opt.updatetime = 300                   -- Faster updates for plugins like git-signs
+-- vim.opt.backspace = "indent,eol,start"     -- REV: Cleaner string format for backspace
+-- vim.opt.encoding = "utf-8"
+-- vim.opt.fileencoding = "utf-8"
+--
+-- -- --- Visuals ---
+-- vim.opt.guicursor = {
+--   "n-v-c:block",
+--   "i-ci:ver25-blinkwait700-blinkon400-blinkoff250",
+--   "r-cr:hor20-blinkwait700-blinkon400-blinkoff250",
+--   "o:hor50",
+-- }
+-- -- Make the editor background transparent
+-- vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
+-- -- Brighter line numbers
+-- vim.api.nvim_set_hl(0, "LineNr", { fg = "#d0d0d0" })
+-- vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#ffffff", bold = true })
+--
+--
+-- -- --- Autocommands ---
+-- local augroup = vim.api.nvim_create_augroup("MyConfig", { clear = true })
+--
+-- -- Auto-normalize splits after terminal resize
+-- vim.api.nvim_create_autocmd("VimResized", {
+--     group = augroup,
+--     callback = function() vim.cmd("wincmd =") end,
+-- })
+--
+-- -- Highlight yanked text briefly
+-- vim.api.nvim_create_autocmd("TextYankPost", {
+--     group = augroup,
+--     callback = function()
+--         vim.highlight.on_yank({ higroup = "IncSearch", timeout = 150 })
+--     end,
+-- })
+--
+-- -- --- Keymaps ---
+-- vim.g.mapleader = " "
+--
+-- -- Save on sudo
+-- vim.keymap.set("c", "w!!", "w !sudo tee > /dev/null %", { noremap = true })
+--
+-- -- Toggle line wrapping
+-- vim.keymap.set("n", "<leader>uw", function()
+--     vim.opt.wrap:toggle() -- REV: More idiomatic way to toggle an option
+-- end, { desc = "Toggle line wrap" })
+--
+-- -- Save/Quit
+-- vim.keymap.set({ "i", "n" }, "<C-s>", "<cmd>w<CR>", { noremap = true, silent = true, desc = "Save file" })
+-- vim.keymap.set("n", "<leader>qq", "<cmd>qa<CR>", { desc = "Quit All" })
+--
+-- -- Window navigation
+-- vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
+-- vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Move to below window" })
+-- vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Move to above window" })
+-- vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
+--
+-- -- Word deletion
+-- vim.keymap.set({ 'i', 'c' }, '<C-BS>', '<C-w>', { desc = 'Delete word backward' })
+--
+-- -- Toggle window zoom
+-- local function is_zoomed()
+--     -- A window is considered "zoomed" if it's the only one in its own tab page.
+--     return vim.fn.tabpagenr('$') > 1 and vim.fn.winnr('$') == 1
+-- end
+--
+-- vim.keymap.set("n", "<leader>uz", function()
+--     if is_zoomed() then
+--         vim.cmd("tabclose")
+--     else
+--         vim.cmd("tab split")
+--     end
+-- end, { desc = "Toggle Zoom" })
+--
+-- -- Close window (aware of zoom state)
+-- vim.keymap.set("n", "<leader>wd", function()
+--     if is_zoomed() then
+--         vim.cmd("tabclose")
+--     else
+--         vim.cmd("close")
+--     end
+-- end, { desc = "Close Window" })
+--
+-- -- Buffer management
+-- vim.keymap.set("n", "<leader>bd", function() require("snacks").bufdelete() end, { desc = "Delete Buffer" })
+-- vim.keymap.set("n", "<leader>bb", "<C-^>", { desc = "Switch to Alternate Buffer" })
+-- vim.keymap.set("n", "<leader>bo", function()
+--     local current_buf = vim.api.nvim_get_current_buf()
+--     for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+--         if vim.api.nvim_buf_is_loaded(buf) and buf ~= current_buf then
+--             require("snacks").bufdelete(buf)
+--         end
+--     end
+-- end, { desc = "Delete Other Buffers" })
+--
+-- -- Clear search highlights
+-- vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlight", silent = true })
+--
+--
+-- -- --- Plugin Manager: lazy.nvim ---
+-- local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+-- if not vim.loop.fs_stat(lazypath) then
+--     vim.fn.system({"git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable", lazypath})
+-- end
+-- vim.opt.rtp:prepend(lazypath)
+--
+-- require("lazy").setup({
+--     -- Theme
+--     {
+--         "neanias/everforest-nvim",
+--         version = false,
+--         lazy = false,
+--         priority = 1000,
+--         config = function()
+--             require("everforest").setup({
+--                 transparent_background_level = 1,
+--                 ui_contrast = "high"
+--             })
+--             vim.cmd.colorscheme("everforest")
+--         end,
+--     },
+--
+--     -- Utility
+--     { "tpope/vim-surround", event = "VeryLazy" },
+--     -- Load this first, with no special config yet.
+--     {
+--         "JoosepAlviste/nvim-ts-context-commentstring",
+--         lazy = false, -- Force it to load at startup to be safe
+--     },
+--     {
+--         "numToStr/Comment.nvim",
+--         dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" }, -- Still good practice
+--         config = function()
+--             -- The 'config' function runs AFTER the plugin is loaded.
+--             -- By this point, the dependency is guaranteed to be available.
+--             require("Comment").setup({
+--                 pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+--             })
+--         end,
+--     },
+--     { "windwp/nvim-autopairs", event = "InsertEnter", opts = {} },
+--
+--     -- File Explorer
+--     {
+--         "echasnovski/mini.files",
+--         version = false,
+--         lazy = false,
+--         config = function()
+--             require("mini.files").setup({
+--                 mappings = {
+--                     go_in = 'l', go_in_plus = '<CR>', go_out = 'h', go_out_plus = 'H', reset = '<BS>',
+--                 },
+--             })
+--             vim.keymap.set("n", "<leader>e", function() require("mini.files").open(vim.fn.getcwd(), true) end, { desc = "Open Mini Files" })
+--         end,
+--     },
+--
+--     -- LSP & Completion
+--     { "neovim/nvim-lspconfig" },
+--     { "folke/neodev.nvim", opts = {} },
+--     { "williamboman/mason.nvim",
+--         build = ":MasonUpdate",
+--         config = function()
+--             require("mason").setup()
+--         end,
+--     },
+--     {
+--         "williamboman/mason-lspconfig.nvim",
+--         dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
+--         config = function()
+--             local servers = { "lua_ls", "bashls", "intelephense" }
+--             require("mason-lspconfig").setup({ ensure_installed = servers })
+--
+--             local capabilities = require("cmp_nvim_lsp").default_capabilities()
+--             local lspconfig = require("lspconfig")
+--
+--             -- Intelephense duplicate client workaround
+--             vim.api.nvim_create_autocmd("LspAttach", {
+--                 group = augroup,
+--                 callback = function(args)
+--                     local client = vim.lsp.get_client_by_id(args.data.client_id)
+--                     if client and client.name == "intelephense" and vim.tbl_isempty(client.config.settings or {}) then
+--                         vim.schedule(function() client.stop() end)
+--                     end
+--                 end,
+--             })
+--
+--             local function on_attach(_, bufnr)
+--                 local opts = { buffer = bufnr, silent = true }
+--                 vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts) -- REV: Use standard definition function
+--                 vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+--                 vim.keymap.set("n", "gD", function() require("snacks").picker.lsp_declarations() end, opts)
+--                 vim.keymap.set("n", "gr", function() require("snacks").picker.lsp_references() end, opts)
+--             end
+--
+--             for _, name in ipairs(servers) do
+--                 local server_opts = { on_attach = on_attach, capabilities = capabilities }
+--                 if name == "lua_ls" then
+--                     server_opts.settings = {
+--                         Lua = {
+--                             runtime = { version = "LuaJIT" },
+--                             diagnostics = { globals = { "vim" } },
+--                             workspace = { checkThirdParty = false, library = vim.api.nvim_get_runtime_file("", true) },
+--                         },
+--                     }
+--                 elseif name == "intelephense" then
+--                     server_opts.settings = { intelephense = { files = { maxSize = 5000000 } } }
+--                 end
+--                 lspconfig[name].setup(server_opts)
+--             end
+--         end,
+--     },
+--     {
+--         "hrsh7th/nvim-cmp",
+--         event = { "InsertEnter", "CmdlineEnter" },
+--         dependencies = { "hrsh7th/cmp-nvim-lsp", "hrsh7th/cmp-path", "hrsh7th/cmp-buffer", "hrsh7th/cmp-cmdline" },
+--         config = function()
+--             local cmp = require("cmp")
+--             cmp.setup({
+--                 completion = { completeopt = "menu,menuone,noselect" },
+--                 mapping = cmp.mapping.preset.insert({
+--                     ["<C-Space>"] = cmp.mapping.complete(),
+--                     ["<CR>"] = cmp.mapping.confirm({ select = true }),
+--                     ["<Tab>"] = cmp.mapping.select_next_item(),
+--                     ["<S-Tab>"] = cmp.mapping.select_prev_item(),
+--                 }),
+--                 sources = cmp.config.sources({ { name = "nvim_lsp" }, { name = "path" }, { name = "buffer" } }),
+--             })
+--             cmp.setup.cmdline(":", {
+--                 mapping = cmp.mapping.preset.cmdline(),
+--                 sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }),
+--             })
+--             cmp.setup.cmdline({ "/", "?" }, {
+--                 mapping = cmp.mapping.preset.cmdline(),
+--                 sources = { { name = "buffer" } },
+--             })
+--         end,
+--     },
+--
+--     -- Treesitter
+--     {
+--         "nvim-treesitter/nvim-treesitter",
+--         build = ":TSUpdate",
+--         -- Good practice to ensure context is available if needed
+--         dependencies = { "nvim-treesitter/nvim-treesitter-context" },
+--         -- We force it to load at startup to ensure it's ready for the config later
+--         lazy = false,
+--     },
+--     {
+--         "nvim-treesitter/nvim-treesitter-context",
+--         opts = { max_lines = 3, separator = "" },
+--         config = function(_, opts)
+--             require("treesitter-context").setup(opts)
+--
+--             -- REV: Add these lines back for transparent context
+--             vim.api.nvim_set_hl(0, "TreesitterContext", { link = "Normal" })
+--             vim.api.nvim_set_hl(0, "TreesitterContextLineNumber", { link = "LineNr" })
+--         end
+--     },
+--     { "windwp/nvim-ts-autotag", opts = {} },
+--
+--     -- UI/UX (snacks.nvim)
+--     {
+--         "folke/snacks.nvim",
+--         lazy = false,
+--         priority = 1000,
+--         opts = {
+--             picker = { enabled = true, max_results = 2000, sorting = "fzy", prompt = "❯ " },
+--             bufdelete = { enabled = true },
+--             quickfile = { enabled = true },
+--             lazygit = { enabled = true },
+--             dashboard = { enabled = true },
+--         },
+--         config = function(_, opts)
+--             require("snacks").setup(opts)
+--             vim.keymap.set("n", "<leader>ff", function() require("snacks").picker.files() end, { desc = "Find Files" })
+--             vim.keymap.set("n", "<leader>sg", function() require("snacks").picker.grep({ live = true }) end, { desc = "Live Grep" })
+--             vim.keymap.set("n", "<leader>fb", function() require("snacks").picker.buffers() end, { desc = "Find Buffers" })
+--             vim.keymap.set("n", "<leader>fr", function() require("snacks").picker.recent() end, { desc = "Recent Files" })
+--             vim.keymap.set("n", "<leader>gg", function() require("snacks").lazygit() end, { desc = "Open LazyGit" })
+--         end,
+--     },
+-- })
+--
+-- -- =============================================================================
+-- -- FINAL PLUGIN CONFIGURATIONS
+-- -- This code runs AFTER lazy.nvim has loaded the plugins, ensuring they are ready.
+-- -- =============================================================================
+--
+-- -- Treesitter core
+-- require("nvim-treesitter.configs").setup({
+--     ensure_installed = { "lua", "php", "javascript", "typescript", "html", "css", "json", "bash", "markdown", "markdown_inline", "vimdoc", "query" },
+--     sync_install = false,
+--     auto_install = true,
+--     highlight = { enable = true },
+--     indent = { enable = true },
+--     folding = true,
+-- })
+--
+-- -- Folding options that depend on Treesitter being set up correctly
+-- vim.o.foldmethod = "expr"
+-- vim.o.foldexpr = "vim.treesitter.foldexpr()"
+-- vim.o.foldenable = true
+-- vim.o.foldlevelstart = 99
+--
+-- -- Treesitter context (if you still have it configured this way)
+-- require("treesitter-context").setup({
+--     max_lines = 2,
+--     separator = " ",
+-- })
+-- vim.api.nvim_set_hl(0, "TreesitterContext", { link = "Normal" })
+-- vim.api.nvim_set_hl(0, "TreesitterContextLineNumber", { link = "LineNr" })
+--
+-- -- Autotag setup
+-- require("nvim-ts-autotag").setup()
+-- -- --- Yazi File Picker ---
+-- vim.keymap.set("n", "<leader>-", function()
+--     local parent_win = vim.api.nvim_get_current_win()
+--     local tmpfile = vim.fn.tempname()
+--     local buf = vim.api.nvim_create_buf(false, true)
+--
+--     local width = math.floor(vim.o.columns * 0.9)
+--     local height = math.floor(vim.o.lines * 0.9)
+--     local win_opts = {
+--         relative = "editor",
+--         row = math.floor((vim.o.lines - height) / 2),
+--         col = math.floor((vim.o.columns - width) / 2),
+--         width = width, height = height,
+--         style = "minimal", border = "rounded",
+--     }
+--     local win = vim.api.nvim_open_win(buf, true, win_opts)
+--
+--     vim.fn.termopen("yazi --chooser-file=" .. tmpfile, {
+--         on_exit = function()
+--             pcall(vim.api.nvim_win_close, win, true)
+--             if vim.api.nvim_win_is_valid(parent_win) then
+--                 pcall(vim.api.nvim_set_current_win, parent_win)
+--             end
+--
+--             vim.schedule(function()
+--                 local content = vim.fn.readfile(tmpfile)
+--                 pcall(vim.loop.fs_unlink, tmpfile)
+--                 local selection = content and content[1]
+--                 if selection and #selection > 0 then
+--                     local stat = vim.loop.fs_stat(selection)
+--                     if stat and stat.type == "directory" then
+--                         vim.cmd.cd(vim.fn.fnameescape(selection))
+--                         require("mini.files").open(selection, true)
+--                     else
+--                         vim.cmd.edit(vim.fn.fnameescape(selection))
+--                     end
+--                 end
+--             end)
+--         end,
+--     })
+--     vim.cmd.startinsert()
+-- end, { desc = "Yazi picker (float)" })
+--
+-- -- --- Custom Statusline ---
+-- -- REV: Helper function is now local to avoid polluting the global namespace.
+-- local function get_line_diagnostic_text(max_len)
+--     local line = vim.api.nvim_win_get_cursor(0)[1] - 1
+--     local diags = vim.diagnostic.get(0, { lnum = line })
+--     if #diags == 0 then return nil end
+--
+--     table.sort(diags, function(a, b) return a.severity < b.severity end)
+--     local diag = diags[1]
+--
+--     -- REV: Create a reliable lookup table for severity names
+--     local severity_names = {
+--         [vim.diagnostic.severity.ERROR] = "Error",
+--         [vim.diagnostic.severity.WARN] = "Warn",
+--         [vim.diagnostic.severity.INFO] = "Info",
+--         [vim.diagnostic.severity.HINT] = "Hint",
+--     }
+--     -- REV: Use the reliable table for the lookup
+--     local hl_group = "Diagnostic" .. (severity_names[diag.severity] or "")
+--
+--     local msg = diag.message:gsub("\n", " "):gsub("%%", "%%%%")
+--     max_len = max_len or 80
+--     if vim.fn.strdisplaywidth(msg) > max_len then
+--         msg = vim.fn.strcharpart(msg, 0, max_len) .. "…"
+--     end
+--     return string.format("%%#%s#%% %s %%*", hl_group, msg)
+-- end
+--
+-- function _G.diag_or_path() -- REV: This function must be global for the statusline.
+--     return get_line_diagnostic_text(80) or "%f"
+-- end
+--
+-- function _G.diag_counts() -- REV: This function must be global for the statusline.
+--     local counts = { E = 0, W = 0, I = 0, H = 0 }
+--     for _, d in ipairs(vim.diagnostic.get(0)) do
+--         if d.severity == vim.diagnostic.severity.ERROR then counts.E = counts.E + 1
+--         elseif d.severity == vim.diagnostic.severity.WARN then counts.W = counts.W + 1
+--         elseif d.severity == vim.diagnostic.severity.INFO then counts.I = counts.I + 1
+--         elseif d.severity == vim.diagnostic.severity.HINT then counts.H = counts.H + 1
+--         end
+--     end
+--     local parts = {}
+--     if counts.E > 0 then table.insert(parts, "E:" .. counts.E) end
+--     if counts.W > 0 then table.insert(parts, "W:" .. counts.W) end
+--     return table.concat(parts, " ")
+-- end
+--
+-- vim.o.statusline = "%{%v:lua.diag_or_path()%} %=%{%v:lua.diag_counts()%}  %l:%c  %p%% "
+--
+-- vim.api.nvim_create_autocmd({ "DiagnosticChanged", "CursorMoved" }, {
+--     group = augroup,
+--     callback = function() vim.cmd("redrawstatus") end,
+-- })
