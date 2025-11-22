@@ -37,7 +37,10 @@ local mux = wezterm.mux
 -- end
 
 -- Color scheme
-config.color_scheme = "Catppuccin Mocha (Gogh)"
+-- config.color_scheme = "Catppuccin Mocha (Gogh)"
+-- config.color_scheme = 'Gruvbox dark, hard (base16)'
+-- config.color_scheme = 'Kanagawa Dragon (Gogh)'
+config.color_scheme = 'Everforest Dark (Gogh)'
 -- config.enable_bracket_paste = false
 
 -- config.background = {
@@ -94,9 +97,11 @@ end)
 -- end)
 
 -- Font
-config.font = wezterm.font("GeistMono Nerd Font")
-config.font_size = 11
-config.line_height = 1
+config.font = wezterm.font("GeistMono Nerd Font", {
+    weight = "Regular"
+})
+-- config.font_size = 11
+config.line_height = 1.15
 config.text_background_opacity = 1
 
 -- Window
@@ -107,8 +112,10 @@ config.use_fancy_tab_bar = false
 config.show_tabs_in_tab_bar = true
 config.show_new_tab_button_in_tab_bar = false
 config.colors = {
+    background = "#2a2f38",
   tab_bar = {
-    background = "none",
+    -- background = "none",
+    background = "#2a2a38",
 
     active_tab ={
       bg_color = "#BCC3C3",
@@ -124,8 +131,11 @@ config.colors = {
     inactive_tab_edge = '#575757',
   }
 }
+config.foreground_text_hsb = {
+    brightness = 0.95,
+}
 config.window_decorations = "RESIZE"
-config.window_background_opacity = 0.73
+-- config.window_background_opacity = 0.73
 config.window_frame = {
   -- inactive_titlebar_bg = "none",
   -- active_titlebar_bg = "none",
@@ -175,6 +185,36 @@ config.cursor_blink_ease_in = "Constant"
 --   window:set_config_override({enable_tab_bar = true})
 --
 -- end)
+
+--[[
+-- Claude Code statusline integration
+wezterm.on("update-status", function(window, pane)
+  -- Get Claude Code statusline if available
+  local success, stdout, stderr = wezterm.run_child_process({
+    os.getenv("HOME") .. "/.claude/statusline-command.sh"
+  })
+  local claude_status = ""
+  if success then
+    -- claude_status = stdout:gsub("%s+$", "") -- trim trailing whitespace
+    claude_status = stdout
+  end
+  -- Style for Everforest palette
+  local formatted_status = ""
+  if claude_status ~= "" then
+    formatted_status = wezterm.format({
+      { Foreground = { Color = "#A7C080" } }, -- Everforest green
+      -- { Text = "•" },
+      { Foreground = { Color = "#D3C6AA" } }, -- Everforest fg
+      { Text = claude_status .. " " },
+    })
+  end
+  window:set_left_status(formatted_status)
+
+  local overrides = window:get_config_overrides() or {}
+  overrides.hide_tab_bar_if_only_one_tab = (claude_status == "")
+  window:set_config_overrides(overrides)
+end)
+--]]
 
 wezterm.on("update-right-status", function(window, pane)
 
@@ -263,6 +303,13 @@ config.keys = {
 	{ key = "4", mods = "CTRL", action = wezterm.action.ActivatePaneByIndex(3) },
 	{ key = "5", mods = "CTRL", action = wezterm.action.ActivatePaneByIndex(4) },
 
+    -- This binds CTRL+Backspace to send the escape sequence for ALT+Backspace,
+    -- backward-kill-word.
+    {
+      key = 'Backspace',
+      mods = 'CTRL',
+      action = act.SendString('\x17'),
+    },
 	-- show the pane selection mode, but have it swap the active and selected panes
 	{
 		key = "0",
@@ -390,7 +437,82 @@ config.keys = {
       key = 'Home'
     },
   },
+  {
+    key = 'D',
+    mods = 'CTRL|SHIFT',
+    action = wezterm.action.EmitEvent 'setup-dev-layout'
+  },
 }
+
+wezterm.on('setup-dev-layout', function(window, pane)
+  -- Get the current working directory from the initial pane.
+  local cwd_uri = pane:get_current_working_dir()
+  local proper_cwd = cwd_uri.file_path
+
+  -- wezterm.action.SendKey { key = 'l', mods = 'CTRL' }
+  --[[
+    1. Split the current pane, creating a new pane at the bottom for logs.
+       This returns a reference to the newly created pane.
+  --]]
+  local log_pane = pane:split {
+    direction = 'Bottom',
+    size = 0.688,
+    cwd = proper_cwd,
+    args = { 'zsh', '-c', "tail -F storage/logs/laravel.log | grep 'local\\.'" },
+  }
+
+  local queue_pane = log_pane:split {
+    direction = 'Right',
+    size = 0.688,
+    cwd = proper_cwd,
+  }
+
+  --[[
+    2. Split the *initial* pane to the right. This is often more useful
+       than splitting the narrow log pane.
+  --]]
+  local vpn_pane = pane:split {
+    direction = 'Right',
+    size = 0.4,
+    cwd = proper_cwd,
+  }
+
+  --[[
+    Split again the *initial* pane to the bottom
+  --]]
+  local below_inital_pane = pane:split {
+    direction = 'Bottom',
+    size = 0.5,
+    cwd = proper_cwd,
+  }
+
+
+  -- vpn_pane:send_text('connect-vpn')
+  -- queue_pane:send_text('artisan queue:work')
+  vpn_pane:send_text('artisan queue:work')
+  queue_pane:send_text('lazygit \n')
+  pane:send_text('artisan serve \n')
+  below_inital_pane:send_text('npmrd \n')
+
+  queue_pane:activate()
+
+  --[[
+    3. (Optional) Let's add another pane for the queue worker,
+       as your commented-out code suggests. We'll split the new
+       zsh_pane we just created.
+  --]]
+
+  --[[
+    4. (Optional) Send a command to the queue worker pane without
+       executing it immediately, letting you edit it first.
+  --]]
+  -- queue_pane:send_text 'artisan queue:work --queue= --tries=3 '
+
+  --[[
+    5. Activate the main zsh pane so you can start typing there immediately.
+  --]]
+  -- window:activate_pane(zsh_pane)
+end)
 
 -- define key tables
 config.key_tables = {
@@ -410,6 +532,7 @@ config.scrollback_lines = 5000
 
 -- Quick select patterns
 config.quick_select_patterns = {
+  [[\b[\w.-]+(?:\.sh|\.log|\.txt|\.php|\.py|\.json)\b]]
   -- Commit messages like "fix: message" or "refactor(scope): message"
   -- '%a+:%s+.+',
   -- '%a+%b()%s*:%s+.+',
