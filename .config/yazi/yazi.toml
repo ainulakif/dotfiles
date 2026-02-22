@@ -1,4 +1,4 @@
-[manager]
+[mgr]
 linemode = "size"
 
 [input]
@@ -6,5 +6,10 @@ cursor_blink = true
 
 [opener]
 edit = [
-	{ run = '${EDITOR:-nvim} "$@"', desc = "$EDITOR", block = true, for = "unix" },
+	# This command sets the environment variable for this specific execution
+	# and then launches nvim with the selected file(s) ($@).
+	{ run = 'NVIM_APPNAME="nvim-minimal" nvim "$@"', desc = "nvim (minimal)", block = true, for = "unix" },
+
+	# Optional: You can keep the default editor as a second option
+	{ run = '${EDITOR:-vim} "$@"', desc = "Default Editor", block = true, for = "unix" },
 ]

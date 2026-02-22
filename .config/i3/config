@@ -8,11 +8,12 @@ set $term wezterm
 bindsym $mod+Return exec $term
 
 # refresh focused cachy-browser
-set $browser cachy-browser
-bindsym $mod+Shift+Return exec --no-startup-id xdotool search --onlyvisible --class $browser key Ctrl+R
+# set $browser firefox
+# bindsym $mod+Shift+Return exec --no-startup-id xdotool search --onlyvisible --class $browser key Ctrl+R
 
 # set printsscreen using scrot
-bindsym $mod+p exec --no-startup-id maim -s ~/Pictures/screenshots/$(date +%s).png | xclip -selection clipboard -t image/png
+# bindsym $mod+p exec --no-startup-id maim -s ~/Pictures/screenshots/$(date +%s).png | xclip -selection clipboard -t image/png
+bindsym $mod+p exec --no-startup-id maim -s | tee ~/Pictures/screenshots/$(date +%s).png | xclip -selection clipboard -t image/png
 
 # kill focused window
 bindsym $mod+d kill
@@ -38,6 +39,8 @@ bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
+
+bindsym $mod+Tab exec --no-startup-id "wmfocus --textcolor '#ffffff' --textcoloralt '#eeeeee' --halign center --valign center --font 'Hack':50"
 
 # split in horizontal orientation
 bindsym $mod+s split h
@@ -204,6 +207,17 @@ for_window [class="imv"] floating enable
 for_window [class="zenity"] floating enable
 for_window [class="cachyos-welcome"] floating enable
 # for_window [title=".*EyeGestures.*"] floating enable
+for_window [class="^ChatGPT$"] floating enable
+for_window [class="^ChatGPT$"] resize set 500 700, border pixel 2
+for_window [class="^ClaudeApp$"] floating enable
+for_window [class="^ClaudeApp$"] resize set 500 700, border pixel 2
+for_window [class="^Gemini$"] floating enable
+for_window [class="^Gemini$"] resize set 500 700, border pixel 2
+for_window [class="^YouTubeMusic$"] floating enable
+for_window [class="^YouTubeMusic$"] resize set 470 530, border pixel 2
+for_window [class="^ChessDotCom$"] floating enable
+for_window [class="^ChessDotCom$"] resize set 450 450, border pixel 2
+
 
 # default_border normal 5
 
